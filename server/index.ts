@@ -10,6 +10,7 @@ import { importFormations } from "./routes/import-formations";
 import { listTemplates } from "./routes/templates-list";
 import { importTemplates } from "./routes/import-templates";
 import { listProspects } from "./routes/prospects-list";
+import { aiCommercial } from "./routes/ai-commercial";
 
 export function createServer() {
   const app = express();
