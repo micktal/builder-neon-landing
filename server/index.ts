@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { createProspect } from "./routes/prospects-create";
 import { seedFormations } from "./routes/seed-formations";
 import { listFormations } from "./routes/formations-list";
+import { getFormation } from "./routes/formations-detail";
 
 export function createServer() {
   const app = express();
