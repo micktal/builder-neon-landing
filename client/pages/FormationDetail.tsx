@@ -180,8 +180,11 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [tplName, setTplName] = useState<string>(presetTemplate?.template_name || "");
-  const [yourName, setYourName] = useState("");
-  const [yourEmail, setYourEmail] = useState("");
+  const [yourName, setYourName] = useState<string>(() => localStorage.getItem("fpsg_user_name") || "");
+  const [yourEmail, setYourEmail] = useState<string>(() => localStorage.getItem("fpsg_user_email") || "");
+  const [subjectTpl, setSubjectTpl] = useState<string>("");
+  const [bodyTpl, setBodyTpl] = useState<string>("");
+  const [lockBody, setLockBody] = useState<boolean>(false);
 
   const domain = String(formation?.domain || "");
   const format0 = String((Array.isArray(formation?.format) ? formation.format[0] : formation?.format) || "");
@@ -209,14 +212,34 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
     return list.length ? list : (templates.length ? [templates[0]] : []);
   }, [templates, domain, format0, selectedProspect?.sector]);
 
+  // Preselect first filtered template when opening or when list changes
+  useEffect(() => {
+    if (!tplName && filteredTemplates[0]?.template_name) {
+      setTplName(filteredTemplates[0].template_name);
+    }
+  }, [filteredTemplates, tplName]);
+
   useEffect(() => {
     if (presetTemplate?.template_name) setTplName(presetTemplate.template_name);
   }, [presetTemplate?.template_name]);
 
   const currentTemplate = filteredTemplates.find((t) => t.template_name === tplName) || filteredTemplates[0];
 
-  const subject = (currentTemplate?.email_subject || `Proposition — ${formation?.title || "Formation FPSG"}`);
-  const bodyRaw = (currentTemplate?.email_body || `Bonjour {{contact_name}},\nJe vous propose la formation \"{{formation_title}}\" ({{format}}).\nCordialement,\n{{your_name}} — {{your_email}}`);
+  // Initialize or regenerate subject/body templates when template changes
+  useEffect(() => {
+    const defSubject = currentTemplate?.email_subject || `Proposition — ${formation?.title || "Formation FPSG"}`;
+    const defBody = currentTemplate?.email_body || `Bonjour {{contact_name}},\nJe vous propose la formation \"{{formation_title}}\" ({{format}}).\nCordialement,\n{{your_name}} — {{your_email}}`;
+    if (!lockBody) {
+      setSubjectTpl(defSubject);
+      setBodyTpl(defBody);
+    } else if (!subjectTpl) {
+      setSubjectTpl(defSubject);
+    }
+  }, [tplName, currentTemplate?.email_subject, currentTemplate?.email_body]);
+
+  // Persist user identity
+  useEffect(() => { localStorage.setItem("fpsg_user_name", yourName || ""); }, [yourName]);
+  useEffect(() => { localStorage.setItem("fpsg_user_email", yourEmail || ""); }, [yourEmail]);
 
   const replace = (s: string) => s
     .replaceAll("{{company_name}}", String(selectedProspect?.company_name || ""))
@@ -231,12 +254,12 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
     .replaceAll("{{your_email}}", yourEmail);
 
   const copyEmail = async () => {
-    await navigator.clipboard.writeText(`Subject: ${replace(subject)}\n\n${replace(bodyRaw)}`);
+    await navigator.clipboard.writeText(`Subject: ${replace(subjectTpl)}\n\n${replace(bodyTpl)}`);
     toast({ title: "E-mail copié" });
   };
 
   const mailto = () => {
-    const url = `mailto:${encodeURIComponent(contactEmail)}?subject=${encodeURIComponent(replace(subject))}&body=${encodeURIComponent(replace(bodyRaw))}`;
+    const url = `mailto:${encodeURIComponent(contactEmail)}?subject=${encodeURIComponent(replace(subjectTpl))}&body=${encodeURIComponent(replace(bodyTpl))}`;
     window.location.href = url;
   };
 
@@ -245,6 +268,8 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
       <button onClick={() => setOpen(true)} className="rounded-full bg-gray-100 text-slate-700 border border-gray-200 px-2 py-0.5 text-[11px]">{presetTemplate?.use_case || presetTemplate?.template_name || "Template"}</button>
     );
   }
+
+  const canSend = prospectId >= 0 && !!contactEmail;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -286,14 +311,18 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
               {filteredTemplates.map((t, i) => (<option key={i} value={t.template_name}>{t.template_name} {t.use_case ? `(${t.use_case})` : ""}</option>))}
             </select>
           </div>
+          <div className="flex items-center gap-2">
+            <input id="lock_body" type="checkbox" checked={lockBody} onChange={(e) => setLockBody(e.target.checked)} />
+            <label htmlFor="lock_body" className="text-sm">Verrouiller le corps (conserver mes modifications)</label>
+          </div>
           <div className="grid grid-cols-1 gap-3">
             <div>
               <label className="text-sm font-medium">Subject</label>
-              <input value={replace(subject)} onChange={() => {}} readOnly className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-gray-50"/>
+              <input value={subjectTpl} onChange={(e) => setSubjectTpl(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
             </div>
             <div>
               <label className="text-sm font-medium">Body</label>
-              <textarea value={replace(bodyRaw)} onChange={() => {}} rows={12} className="mt-1 w-full rounded-md border px-3 py-2 text-sm bg-gray-50"/>
+              <textarea value={bodyTpl} onChange={(e) => setBodyTpl(e.target.value)} rows={12} className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -302,7 +331,12 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
           </div>
           <div className="flex flex-wrap gap-2 justify-end">
             <button onClick={copyEmail} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Copier e-mail</button>
-            <button onClick={mailto} className="rounded-md bg-blue-600 text-white px-3 py-2 text-sm">Ouvrir dans e-mail</button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button onClick={mailto} disabled={!canSend} className={`rounded-md px-3 py-2 text-sm ${canSend ? "bg-blue-600 text-white" : "border opacity-60 cursor-not-allowed"}`}>Ouvrir dans e-mail</button>
+              </TooltipTrigger>
+              <TooltipContent>{canSend ? "Ouvrir votre client e-mail" : "Sélectionnez un prospect et un e-mail"}</TooltipContent>
+            </Tooltip>
             <button onClick={() => setOpen(false)} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Enregistrer comme brouillon</button>
             <button onClick={() => setOpen(false)} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Annuler</button>
           </div>
