@@ -124,10 +124,36 @@ export default function ProspectNew() {
 
   const save = async () => {
     if (!requiredOk) { toast({ title: "Champs requis manquants" }); return; }
-    // Placeholder de sauvegarde (binder CMS plus tard)
-    toast({ title: "✅ Prospect ajouté avec succès !" });
-    // navigate vers la liste (placeholder)
-    // navigate("/prospects");
+    try {
+      const payload = {
+        company_name,
+        entity_type,
+        sector,
+        size_band,
+        region,
+        sites_count: sites_count === "" ? null : sites_count,
+        contacts: contacts.map(c => ({
+          name: c.contact_name,
+          role: c.role,
+          email: c.email,
+          phone: c.phone,
+          linkedin: c.linkedin,
+        })),
+        training_history,
+        budget_hint,
+        preferred_format,
+        priority_score,
+        notes,
+      };
+      const resp = await fetch("/api/prospects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const json = await resp.json();
+      if (!resp.ok || json?.error) throw new Error(json?.error || "Erreur serveur");
+      toast({ title: "✅ Prospect ajouté avec succès !" });
+      // navigate vers la liste
+      // navigate("/prospects");
+    } catch (e: any) {
+      toast({ title: "Erreur", description: e?.message || "Impossible d'enregistrer" });
+    }
   };
 
   const setContactField = (idx: number, key: keyof typeof contacts[number], value: string) => {
