@@ -1,7 +1,6 @@
 import type { RequestHandler } from "express";
 
 const PUBLIC_KEY = process.env.VITE_BUILDER_PUBLIC_KEY || process.env.BUILDER_PUBLIC_KEY; // try both
-const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
 
 const ALL_SECTORS = [
   "Industrie",
@@ -129,6 +128,7 @@ const formationsSeed = [
 
 export const seedFormations: RequestHandler = async (_req, res) => {
   try {
+    const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
     if (!PRIVATE_KEY) return res.status(500).json({ error: "Missing BUILDER_PRIVATE_KEY" });
 
     const created: any[] = [];
