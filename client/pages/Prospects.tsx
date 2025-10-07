@@ -225,7 +225,7 @@ export default function Prospects() {
       {/* Mobile cards */}
       <div className="md:hidden grid gap-3">
         {items.map((p) => (
-          <div key={p.id} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div key={p.id || p.company_name} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="font-semibold text-slate-900">{p.company_name}</div>
               <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span>
