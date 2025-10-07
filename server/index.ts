@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { createProspect } from "./routes/prospects-create";
 import { seedFormations } from "./routes/seed-formations";
+import { listFormations } from "./routes/formations-list";
 
 export function createServer() {
   const app = express();
