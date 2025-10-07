@@ -9,6 +9,7 @@ import { getFormation } from "./routes/formations-detail";
 import { importFormations } from "./routes/import-formations";
 import { listTemplates } from "./routes/templates-list";
 import { importTemplates } from "./routes/import-templates";
+import { listProspects } from "./routes/prospects-list";
 
 export function createServer() {
   const app = express();
