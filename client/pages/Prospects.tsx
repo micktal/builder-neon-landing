@@ -194,7 +194,7 @@ export default function Prospects() {
           </thead>
           <tbody>
             {items.map((p) => (
-              <tr key={p.id} className="border-b hover:bg-gray-50">
+              <tr key={p.id || p.company_name} className="border-b hover:bg-gray-50">
                 <td className="p-3"><input type="checkbox" checked={!!selected[p.id]} onChange={() => toggleOne(p.id)} /></td>
                 <td className="p-3"><Link to={`/prospects?id=${p.id}`} className="text-blue-700 hover:underline">{p.company_name}</Link></td>
                 <td className="p-3">{p.sector}</td>
