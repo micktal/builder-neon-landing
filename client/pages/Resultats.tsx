@@ -8,6 +8,8 @@ function useQuery() {
   return useMemo(() => new URLSearchParams(search), [search]);
 }
 
+import { fetchBuilderContent } from "@/services/builder";
+
 // Demo datasets for a functional UI; replace with real content models when available.
 const DEMO_FORMATIONS = [
   {
