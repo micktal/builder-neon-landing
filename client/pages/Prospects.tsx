@@ -4,10 +4,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Search as SearchIcon, Plus, Upload, Download, Mail, Eye, Clipboard, Filter, Info } from "lucide-react";
+import { Search as SearchIcon, Plus, Upload, Download, Mail, Eye, Clipboard, Filter, Info, Map as MapIcon, List as ListIcon } from "lucide-react";
 
 import { useEffect } from "react";
 import { fetchBuilderContent } from "@/services/builder";
+import ProspectsMap from "@/components/shared/ProspectsMap";
 
 interface Contact { name: string; role: string; email: string; phone?: string }
 interface Prospect {
@@ -48,6 +49,7 @@ export default function Prospects() {
 
   // Selection & pagination
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const [view, setView] = useState<'list'|'map'>('list');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
@@ -177,6 +179,9 @@ export default function Prospects() {
         <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">Prospects <span className="text-sm font-normal text-slate-600">({total})</span></h1>
         <div className="flex flex-wrap gap-2">
           <Link to="/prospects/new" className="inline-flex items-center gap-2 rounded-md bg-blue-600 text-white px-3 py-2 text-sm"><Plus className="h-4 w-4" /> Créer un prospect</Link>
+          <button onClick={()=>setView(view==='list'?'map':'list')} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">
+            {view==='list' ? <><MapIcon className="h-4 w-4"/> Carte</> : <><ListIcon className="h-4 w-4"/> Liste</>}
+          </button>
           <Dialog>
             <DialogTrigger asChild>
               <button className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"><Upload className="h-4 w-4"/> Importer CSV</button>
@@ -228,7 +233,15 @@ export default function Prospects() {
         </div>
       </div>
 
+      {/* Map view */}
+      {view === 'map' && (
+        <div className="mb-4">
+          <ProspectsMap items={filtered} />
+        </div>
+      )}
+
       {/* Desktop table */}
+      {view === 'list' && (
       <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full text-sm">
           <thead>
@@ -273,8 +286,10 @@ export default function Prospects() {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* Mobile cards */}
+      {view === 'list' && (
       <div className="md:hidden grid gap-3">
         {items.map((p) => (
           <div key={p.id || p.company_name} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -293,8 +308,10 @@ export default function Prospects() {
           </div>
         ))}
       </div>
+      )}
 
       {/* Pagination */}
+      {view === 'list' && (
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
         <div className="text-sm text-slate-600">{total === 0 ? "Aucun prospect" : `${start + 1}–${Math.min(start + perPage, total)} sur ${total}`}</div>
         <div className="flex items-center gap-2">
@@ -308,6 +325,7 @@ export default function Prospects() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Bulk actions bar */}
       {selectedRows.length > 0 && (
