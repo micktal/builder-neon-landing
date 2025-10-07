@@ -10,7 +10,7 @@ const ALL_SECTORS = [
   "BTP",
   "Tertiaire",
   "Public",
-  "��ducation",
+  "Éducation",
 ];
 
 const formationsSeed = [
