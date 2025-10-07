@@ -30,6 +30,13 @@ const App = () => (
             <Route path="/prospects" element={<Placeholder title="Prospects" description="Liste, fiches et ajout/édition des prospects." />} />
             <Route path="/formations" element={<Placeholder title="Formations" description="Catalogue FPSG avec filtres et fiches détaillées." />} />
             <Route path="/templates" element={<Placeholder title="Templates" description="Modèles de speechs et e-mails, prêts à copier/coller." />} />
+            <Route path="/prospects/new" element={<Placeholder title="Nouveau prospect" description="Formulaire de création à venir." />} />
+            <Route path="/formations/new" element={<Placeholder title="Nouvelle formation" description="Formulaire de création à venir." />} />
+            <Route path="/templates/new" element={<Placeholder title="Nouveau template" description="Formulaire de création à venir." />} />
+            <Route path="/aide" element={<Placeholder title="Aide" description="Documentation et bonnes pratiques (prochainement)." />} />
+            <Route path="/legal" element={<Placeholder title="Mentions légales" />} />
+            <Route path="/privacy" element={<Placeholder title="Confidentialité" />} />
+            <Route path="/support" element={<Placeholder title="Support" description="Contactez l'équipe interne." />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
