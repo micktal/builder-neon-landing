@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchBuilderContentWithIds } from "@/services/builder";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,8 +27,9 @@ export default function Formations() {
     (async () => {
       setLoading(true);
       try {
-        const { items } = await fetchBuilderContentWithIds<Formation>("formations", { limit: 200, cacheBust: true });
-        setItems(items);
+        const res = await fetch(`/api/formations?limit=200`);
+        const json = await res.json();
+        setItems(json?.items || []);
       } finally {
         setLoading(false);
       }
