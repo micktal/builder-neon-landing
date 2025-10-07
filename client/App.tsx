@@ -14,6 +14,7 @@ import Placeholder from "./pages/Placeholder";
 import ProspectNew from "./pages/ProspectNew";
 import Prospects from "./pages/Prospects";
 import FormationDetail from "./pages/FormationDetail";
+import ProspectDetail from "./pages/ProspectDetail";
 import Resultats from "./pages/Resultats";
 import Formations from "./pages/Formations";
 import Templates from "./pages/Templates";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/nouvelle-recherche" element={<NouvelleRecherche />} />
           <Route path="/resultats" element={<Resultats />} />
           <Route path="/prospects" element={<Prospects />} />
+          <Route path="/prospects/:id" element={<ProspectDetail />} />
           <Route path="/formations" element={<Formations />} />
           <Route path="/formations/:id" element={<FormationDetail />} />
           <Route path="/templates" element={<Templates />} />
