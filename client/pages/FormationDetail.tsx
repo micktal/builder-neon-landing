@@ -5,6 +5,7 @@ import { fetchBuilderContent, fetchBuilderItem } from "@/services/builder";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ExternalLink, Link as LinkIcon, Mail, Printer, ArrowLeft } from "lucide-react";
+import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
 
 interface Prospect { company_name: string; sector?: string; region?: string; priority_score?: number; contacts?: { name?: string; email?: string }[] }
 interface Template { template_name: string; use_case?: string; domain_filter?: string[]; sector_filter?: string[]; format_filter?: string[]; email_subject?: string; email_body?: string; speech_text?: string }
@@ -17,6 +18,7 @@ export default function FormationDetail() {
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [printMode, setPrintMode] = useState(false);
+  const [openCompose, setOpenCompose] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -84,7 +86,7 @@ export default function FormationDetail() {
         <div className="flex flex-wrap gap-2">
           <Tooltip><TooltipTrigger asChild><a href={pdf || undefined} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}><ExternalLink className="h-4 w-4"/> Voir plaquette</a></TooltipTrigger><TooltipContent>{pdf ? "Ouvrir PDF" : "Non disponible"}</TooltipContent></Tooltip>
           <Tooltip><TooltipTrigger asChild><button onClick={teaserCopy} disabled={!teaser} className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}><LinkIcon className="h-4 w-4"/> Copier teaser</button></TooltipTrigger><TooltipContent>{teaser ? "Copier lien" : "Non disponible"}</TooltipContent></Tooltip>
-          <EmailProposalButton formation={formation} templates={templates} prospects={prospects} />
+          <button onClick={() => setOpenCompose(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"><Mail className="h-4 w-4"/> Envoyer proposition e-mail</button>
           <Tooltip><TooltipTrigger asChild><button onClick={doPrint} className="inline-flex items-center gap-2 rounded-md bg-blue-600 text-white px-3 py-2 text-sm"><Printer className="h-4 w-4"/> Exporter en PDF</button></TooltipTrigger><TooltipContent>Export PDF</TooltipContent></Tooltip>
         </div>
       </div>
@@ -165,6 +167,13 @@ export default function FormationDetail() {
           </section>
         </aside>
       </div>
+
+      <ComposeEmailModal
+        open={openCompose}
+        onClose={() => setOpenCompose(false)}
+        context={{ formation: { title, duration, format: formats, domain } }}
+        defaultUseCase="Découverte"
+      />
 
       <style>{`
         @page { size: A4; margin: 12mm; }
