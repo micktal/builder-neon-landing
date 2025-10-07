@@ -248,7 +248,7 @@ export default function Prospects() {
             {items.map((p) => (
               <tr key={p.id || p.company_name} className="border-b hover:bg-gray-50">
                 <td className="p-3"><input type="checkbox" checked={!!selected[p.id]} onChange={() => toggleOne(p.id)} /></td>
-                <td className="p-3"><Link to={`/prospects?id=${p.id}`} className="text-blue-700 hover:underline">{p.company_name}</Link></td>
+                <td className="p-3"><Link to={`/prospects/${p.id}`} className="text-blue-700 hover:underline">{p.company_name}</Link></td>
                 <td className="p-3">{p.sector}</td>
                 <td className="p-3">{p.region}</td>
                 <td className="p-3">{p.size_band}</td>
@@ -261,7 +261,7 @@ export default function Prospects() {
                 <td className="p-3"><span className={`inline-flex rounded-full px-2 py-0.5 ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span></td>
                 <td className="p-3">
                   <div className="flex items-center gap-2">
-                    <Tooltip><TooltipTrigger asChild><Link to={`/prospects?id=${p.id}`} className="p-1 rounded hover:bg-gray-100" aria-label="Ouvrir"><Eye className="h-4 w-4"/></Link></TooltipTrigger><TooltipContent>Ouvrir fiche</TooltipContent></Tooltip>
+                    <Tooltip><TooltipTrigger asChild><Link to={`/prospects/${p.id}`} className="p-1 rounded hover:bg-gray-100" aria-label="Ouvrir"><Eye className="h-4 w-4"/></Link></TooltipTrigger><TooltipContent>Ouvrir fiche</TooltipContent></Tooltip>
                     {p.contacts[0]?.email && (
                       <Tooltip><TooltipTrigger asChild><a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="p-1 rounded hover:bg-gray-100" aria-label="Email"><Mail className="h-4 w-4"/></a></TooltipTrigger><TooltipContent>Mailto</TooltipContent></Tooltip>
                     )}
@@ -286,7 +286,7 @@ export default function Prospects() {
             <div className="mt-1 text-sm text-slate-700">{p.contacts[0]?.name} {p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""} — <button onClick={() => p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: 'E-mail copié' }))} className="underline text-blue-700">{p.contacts[0]?.email}</button></div>
             {p.notes && <div className="mt-1 text-sm text-slate-600 line-clamp-2">{p.notes}</div>}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Link to={`/prospects?id=${p.id}`} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Ouvrir</Link>
+              <Link to={`/prospects/${p.id}`} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Ouvrir</Link>
               {p.contacts[0]?.email && <a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="rounded-md bg-blue-600 text-white px-3 py-1.5 text-sm">E-mail</a>}
               <button onClick={() => copy("Résumé", summaryText(p))} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Copier résumé</button>
             </div>
