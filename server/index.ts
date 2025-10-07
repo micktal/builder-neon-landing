@@ -26,6 +26,7 @@ export function createServer() {
 
   // Seed formations (Builder CMS)
   app.post("/api/seed/formations", seedFormations);
+  app.get("/api/seed/formations", seedFormations);
 
   return app;
 }
