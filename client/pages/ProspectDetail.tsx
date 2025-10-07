@@ -5,6 +5,7 @@ import CommercialAIAssistant from "@/components/shared/CommercialAIAssistant";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ArrowLeft, Mail } from "lucide-react";
 import { fetchBuilderItem } from "@/services/builder";
+import GeneratePDFModal from "@/components/shared/GeneratePDFModal";
 
 interface Contact { name?: string; role?: string; email?: string; phone?: string }
 interface Prospect {
@@ -29,6 +30,7 @@ export default function ProspectDetail() {
   const { toast } = useToast();
   const [prospect, setProspect] = useState<Prospect | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [openPDF, setOpenPDF] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -56,6 +58,9 @@ export default function ProspectDetail() {
         <div className="flex items-center gap-2">
           <Link to="/prospects" className="inline-flex items-center gap-1 text-sm text-slate-700 hover:underline"><ArrowLeft className="h-4 w-4"/> Retour</Link>
           <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">{prospect.company_name}</h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">🧾 Générer proposition PDF</button>
         </div>
       </div>
 
@@ -128,6 +133,14 @@ export default function ProspectDetail() {
           </section>
         </aside>
       </div>
+
+      <GeneratePDFModal
+        open={openPDF}
+        onClose={() => setOpenPDF(false)}
+        context="prospect"
+        initialProspect={prospect}
+        initialTemplates={templates}
+      />
     </div>
   );
 }
