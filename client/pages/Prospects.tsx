@@ -6,10 +6,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Search as SearchIcon, Plus, Upload, Download, Mail, Eye, Clipboard, Filter, Info } from "lucide-react";
 
-// Demo dataset (binder CMS plus tard)
+import { useEffect } from "react";
+import { fetchBuilderContent } from "@/services/builder";
+
 interface Contact { name: string; role: string; email: string; phone?: string }
 interface Prospect {
-  id: string;
+  id?: string;
   company_name: string;
   entity_type?: string;
   sector: string;
@@ -20,15 +22,11 @@ interface Prospect {
   training_history?: string;
   budget_hint?: string;
   priority_score: number;
+  preferred_format?: string;
   notes?: string;
 }
 
-const DATA: Prospect[] = [
-  { id: "p1", company_name: "ACME Santé", sector: "Santé", size_band: "500-1000", region: "IDF", contacts: [{ name: "Claire Dupont", role: "DRH", email: "claire@acme.com" }], priority_score: 78, notes: "Ouverture site Q4" },
-  { id: "p2", company_name: "NovaBank", sector: "Tertiaire", size_band: "1000+", region: "ARA", contacts: [{ name: "Marc Leroy", role: "Sécurité", email: "marc@novabank.com" }], priority_score: 65, notes: "Incidents clients 2024" },
-  { id: "p3", company_name: "Luxo Retail", sector: "Retail/Luxe", size_band: "200-500", region: "IDF", contacts: [{ name: "Sarah Martin", role: "Retail Manager", email: "sarah@luxo.com" }], priority_score: 84, notes: "Démarque élevée" },
-  { id: "p4", company_name: "Clinique Bleu", sector: "Santé", size_band: "50-249", region: "NA", contacts: [{ name: "Paul Renard", role: "HSE", email: "p.renard@bleu.fr" }], priority_score: 40 },
-];
+const EMPTY: Prospect[] = [];
 
 const SECTORS = ["Industrie", "Santé", "Retail/Luxe", "Transport", "BTP", "Tertiaire", "Public", "Éducation"] as const;
 const REGIONS = ["IDF", "PACA", "ARA", "HDF", "NA", "GE", "Bretagne", "Normandie", "Occitanie", "Corse"] as const;
@@ -221,7 +219,7 @@ export default function Prospects() {
               <div className="font-semibold text-slate-900">{p.company_name}</div>
               <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span>
             </div>
-            <div className="text-xs text-slate-600">{p.sector} �� {p.region} • {p.size_band}</div>
+            <div className="text-xs text-slate-600">{p.sector} • {p.region} • {p.size_band}</div>
             <div className="mt-1 text-sm text-slate-700">{p.contacts[0]?.name} {p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""} — <button onClick={() => p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: 'E-mail copié' }))} className="underline text-blue-700">{p.contacts[0]?.email}</button></div>
             {p.notes && <div className="mt-1 text-sm text-slate-600 line-clamp-2">{p.notes}</div>}
             <div className="mt-3 flex flex-wrap gap-2">
