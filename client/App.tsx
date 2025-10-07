@@ -32,6 +32,7 @@ const App = () => (
             <Route path="/resultats" element={<Resultats />} />
             <Route path="/prospects" element={<Prospects />} />
             <Route path="/formations" element={<Placeholder title="Formations" description="Catalogue FPSG avec filtres et fiches détaillées." />} />
+            <Route path="/formations/:id" element={<FormationDetail />} />
             <Route path="/templates" element={<Placeholder title="Templates" description="Modèles de speechs et e-mails, prêts à copier/coller." />} />
             <Route path="/prospects/new" element={<ProspectNew />} />
             <Route path="/formations/new" element={<Placeholder title="Nouvelle formation" description="Formulaire de création à venir." />} />
