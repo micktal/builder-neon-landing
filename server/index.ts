@@ -47,5 +47,8 @@ export function createServer() {
   app.post("/api/import/templates", importTemplates);
   app.get("/api/import/templates", importTemplates);
 
+  // Prospects list (Builder CMS)
+  app.get("/api/prospects", listProspects);
+
   return app;
 }
