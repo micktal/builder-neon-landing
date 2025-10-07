@@ -24,5 +24,8 @@ export function createServer() {
   // Create prospect (Builder CMS)
   app.post("/api/prospects", createProspect);
 
+  // Seed formations (Builder CMS)
+  app.post("/api/seed/formations", seedFormations);
+
   return app;
 }
