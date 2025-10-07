@@ -196,7 +196,7 @@ export default function FormationDetail() {
   );
 }
 
-function sanitizeRich(input?: string) { return (input || "\").replace(/<script[^>]*>[\s\S]*?<\\/script>/gi, \""); }
+function sanitizeRich(input?: string) { return String(input || "").replace(/<script[^>]*>[\s\S]*?<\/script>/gi, ""); }
 
 function EmailProposalButton({ asBadge, formation, templates, prospects, presetTemplate }: { asBadge?: boolean; formation: any; templates: Template[]; prospects: Prospect[]; presetTemplate?: Template }) {
   const { toast } = useToast();
