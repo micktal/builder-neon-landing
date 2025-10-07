@@ -21,7 +21,7 @@ export function createServer() {
   app.get("/api/demo", handleDemo);
 
   // Create prospect (Builder CMS)
-  app.post("/api/prospects", (await import("./routes/prospects-create")).createProspect);
+  app.post("/api/prospects", createProspect);
 
   return app;
 }
