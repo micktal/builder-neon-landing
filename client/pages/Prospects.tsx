@@ -51,9 +51,17 @@ export default function Prospects() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
+  // Load
+  useEffect(() => {
+    (async () => {
+      const { items } = await fetchBuilderContent<Prospect>("prospects", { limit: 200, cacheBust: true });
+      setData(items);
+    })();
+  }, []);
+
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
-    return DATA.filter((p) => {
+    return (data || EMPTY).filter((p) => {
       const matchText = !search || [
         p.company_name,
         p.contacts[0]?.name,
