@@ -16,6 +16,7 @@ import Prospects from "./pages/Prospects";
 import FormationDetail from "./pages/FormationDetail";
 import Resultats from "./pages/Resultats";
 import Formations from "./pages/Formations";
+import Templates from "./pages/Templates";
 
 const App = () => (
   <TooltipProvider>

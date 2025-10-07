@@ -24,12 +24,12 @@ export default function FormationDetail() {
       const res = await fetch(`/api/formations/${encodeURIComponent(id)}`);
       const json = await res.json();
       setFormation(json?.data || null);
-      const [{ items: ps }, { items: ts }] = await Promise.all([
+      const [{ items: ps }, tRes] = await Promise.all([
         fetchBuilderContent<Prospect>("prospects", { limit: 200, cacheBust: true }),
-        fetchBuilderContent<Template>("templates", { limit: 200, cacheBust: true }),
+        fetch('/api/templates?limit=200').then(r => r.json()).catch(() => ({ items: [] })),
       ]);
       setProspects(ps);
-      setTemplates(ts);
+      setTemplates(Array.isArray(tRes?.items) ? tRes.items.map((x: any) => x.data) : []);
     })();
   }, [id]);
 

@@ -7,6 +7,8 @@ import { seedFormations } from "./routes/seed-formations";
 import { listFormations } from "./routes/formations-list";
 import { getFormation } from "./routes/formations-detail";
 import { importFormations } from "./routes/import-formations";
+import { listTemplates } from "./routes/templates-list";
+import { importTemplates } from "./routes/import-templates";
 
 export function createServer() {
   const app = express();
@@ -38,6 +40,11 @@ export function createServer() {
   // Import formations from CSV
   app.post("/api/import/formations", importFormations);
   app.get("/api/import/formations", importFormations);
+
+  // Templates endpoints
+  app.get("/api/templates", listTemplates);
+  app.post("/api/import/templates", importTemplates);
+  app.get("/api/import/templates", importTemplates);
 
   return app;
 }
