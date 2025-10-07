@@ -32,7 +32,7 @@ const App = () => (
           <Route path="/prospects" element={<Prospects />} />
           <Route path="/formations" element={<Formations />} />
           <Route path="/formations/:id" element={<FormationDetail />} />
-          <Route path="/templates" element={<Placeholder title="Templates" description="Modèles de speechs et e-mails, prêts à copier/coller." />} />
+          <Route path="/templates" element={<Templates />} />
           <Route path="/prospects/new" element={<ProspectNew />} />
           <Route path="/templates/new" element={<Placeholder title="Nouveau template" description="Formulaire de création à venir." />} />
           <Route path="/aide" element={<Placeholder title="Aide" description="Documentation et bonnes pratiques (prochainement)." />} />
