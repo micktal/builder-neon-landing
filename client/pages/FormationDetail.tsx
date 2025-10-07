@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { ExternalLink, Link as LinkIcon, Mail, Printer, ArrowLeft } from "lucide-react";
 import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
 import CommercialAIAssistant from "@/components/shared/CommercialAIAssistant";
+import GeneratePDFModal from "@/components/shared/GeneratePDFModal";
 
 interface Prospect { company_name: string; sector?: string; region?: string; priority_score?: number; contacts?: { name?: string; email?: string }[] }
 interface Template { template_name: string; use_case?: string; domain_filter?: string[]; sector_filter?: string[]; format_filter?: string[]; email_subject?: string; email_body?: string; speech_text?: string }
@@ -20,6 +21,7 @@ export default function FormationDetail() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [printMode, setPrintMode] = useState(false);
   const [openCompose, setOpenCompose] = useState(false);
+  const [openPDF, setOpenPDF] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -88,6 +90,7 @@ export default function FormationDetail() {
           <Tooltip><TooltipTrigger asChild><a href={pdf || undefined} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}><ExternalLink className="h-4 w-4"/> Voir plaquette</a></TooltipTrigger><TooltipContent>{pdf ? "Ouvrir PDF" : "Non disponible"}</TooltipContent></Tooltip>
           <Tooltip><TooltipTrigger asChild><button onClick={teaserCopy} disabled={!teaser} className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}><LinkIcon className="h-4 w-4"/> Copier teaser</button></TooltipTrigger><TooltipContent>{teaser ? "Copier lien" : "Non disponible"}</TooltipContent></Tooltip>
           <button onClick={() => setOpenCompose(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"><Mail className="h-4 w-4"/> Envoyer proposition e-mail</button>
+          <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">🧾 Générer proposition PDF</button>
           <Tooltip><TooltipTrigger asChild><button onClick={doPrint} className="inline-flex items-center gap-2 rounded-md bg-blue-600 text-white px-3 py-2 text-sm"><Printer className="h-4 w-4"/> Exporter en PDF</button></TooltipTrigger><TooltipContent>Export PDF</TooltipContent></Tooltip>
         </div>
       </div>
@@ -177,6 +180,15 @@ export default function FormationDetail() {
         onClose={() => setOpenCompose(false)}
         context={{ formation: { title, duration, format: formats, domain } }}
         defaultUseCase="Découverte"
+      />
+
+      <GeneratePDFModal
+        open={openPDF}
+        onClose={() => setOpenPDF(false)}
+        context="formation"
+        initialFormation={{ ...formation, title, domain, duration, format: formats, audiences, sectors, objectives }}
+        initialTemplates={templates}
+        initialProspects={prospects}
       />
 
       <style>{`
