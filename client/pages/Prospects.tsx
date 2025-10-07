@@ -88,7 +88,7 @@ export default function Prospects() {
 
   const toggleOne = (id: string) => setSelected((s) => ({ ...s, [id]: !s[id] }));
   const selectedIds = Object.keys(selected).filter((id) => selected[id]);
-  const selectedRows = DATA.filter((p) => selectedIds.includes(p.id));
+  const selectedRows = (data || EMPTY).filter((p) => p.id && selectedIds.includes(p.id));
 
   const copy = async (label: string, text: string) => {
     try { await navigator.clipboard.writeText(text); toast({ title: `${label} copié` }); } catch { toast({ title: "Échec de la copie" }); }
