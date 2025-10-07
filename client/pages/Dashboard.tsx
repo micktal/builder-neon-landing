@@ -9,8 +9,24 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Placeholder counters (binder plus tard)
-  const counts = { prospects: undefined as number | undefined, formations: undefined as number | undefined, templates: undefined as number | undefined };
+  // Counters from Builder CMS
+  const [counts, setCounts] = useState<{prospects?: number; formations?: number; templates?: number}>({});
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const key = (import.meta as any).env?.VITE_BUILDER_PUBLIC_KEY as string | undefined;
+        if (!key) return;
+        const base = "https://cdn.builder.io/api/v3/content";
+        const models = ["prospects","formations","templates"] as const;
+        const results = await Promise.all(models.map(async (m) => {
+          const url = `${base}/${m}?apiKey=${key}&limit=1&fields=none&cachebust=${Date.now()}`;
+          const r = await fetch(url); const j = await r.json(); return [m, (j?.count ?? j?.total ?? 0) as number] as const;
+        }));
+        setCounts(Object.fromEntries(results));
+      } catch {}
+    })();
+  }, []);
 
   const copy = async (label: string, text: string) => {
     try {
