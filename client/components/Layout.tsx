@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { ReactNode } from "react";
-import { Moon, Sun, Search, Grid2X2, Building2, GraduationCap, FileText } from "lucide-react";
+import { Moon, Sun, Search, Grid2X2, Building2, GraduationCap, FileText, BarChart3 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 interface Props {
