@@ -133,28 +133,48 @@ export default function Resultats() {
 
   const summaryMini = [domain, format, useCase].filter(Boolean).join(" / ");
 
+  const [fData, setFData] = useState<any[]>([]);
+  const [pData, setPData] = useState<any[]>([]);
+  const [tData, setTData] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const [{ items: f }, { items: p }, { items: t }] = await Promise.all([
+        fetchBuilderContent<any>("formations", { limit: 200, cacheBust: true }),
+        fetchBuilderContent<any>("prospects", { limit: 200, cacheBust: true }),
+        fetchBuilderContent<any>("templates", { limit: 200, cacheBust: true }),
+      ]);
+      setFData(f);
+      setPData(p);
+      setTData(t);
+    })();
+  }, []);
+
   const formations = useMemo(() => {
-    return DEMO_FORMATIONS.filter((f) =>
-      (!domain || f.domain.toLowerCase().includes(domain.toLowerCase())) &&
-      (!format || f.format.toLowerCase().includes(format.toLowerCase())) &&
-      (sectors.length === 0 || sectors.some((s) => f.sectors.map((x) => x.toLowerCase()).includes(s.toLowerCase())))
+    const src = fData.length ? fData : DEMO_FORMATIONS;
+    return src.filter((f: any) =>
+      (!domain || String(f.domain).toLowerCase().includes(domain.toLowerCase())) &&
+      (!format || String(Array.isArray(f.format) ? f.format.join(" ") : f.format).toLowerCase().includes(format.toLowerCase())) &&
+      (sectors.length === 0 || sectors.some((s) => (Array.isArray(f.sectors) ? f.sectors : []).map((x: string) => x.toLowerCase()).includes(s.toLowerCase())))
     );
-  }, [domain, format, sectors]);
+  }, [domain, format, sectors, fData]);
 
   const prospects = useMemo(() => {
-    return DEMO_PROSPECTS.filter((p) =>
-      (sectors.length === 0 || sectors.some((s) => p.sector.toLowerCase() === s.toLowerCase())) &&
-      (!region || p.region.toLowerCase() === region.toLowerCase())
+    const src = pData.length ? pData : DEMO_PROSPECTS as any[];
+    return src.filter((p: any) =>
+      (sectors.length === 0 || sectors.some((s) => String(p.sector).toLowerCase() === s.toLowerCase())) &&
+      (!region || String(p.region).toLowerCase() === region.toLowerCase())
     );
-  }, [sectors, region]);
+  }, [sectors, region, pData]);
 
   const templates = useMemo(() => {
-    return DEMO_TEMPLATES.filter((t) =>
-      (!domain || t.domain_filter.map((x) => x.toLowerCase()).includes(domain.toLowerCase())) &&
-      (!useCase || t.use_case.toLowerCase().includes(useCase.toLowerCase())) &&
-      (!format || t.format_filter.map((x) => x.toLowerCase()).includes(format.toLowerCase()))
+    const src = tData.length ? tData : DEMO_TEMPLATES as any[];
+    return src.filter((t: any) =>
+      (!domain || (Array.isArray(t.domain_filter) ? t.domain_filter : []).map((x: string) => x.toLowerCase()).includes(domain.toLowerCase())) &&
+      (!useCase || String(t.use_case).toLowerCase().includes(useCase.toLowerCase())) &&
+      (!format || (Array.isArray(t.format_filter) ? t.format_filter : []).map((x: string) => x.toLowerCase()).includes(format.toLowerCase()))
     );
-  }, [domain, useCase, format]);
+  }, [domain, useCase, format, tData]);
 
   const copy = async (label: string, text: string) => {
     try {
