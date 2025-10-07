@@ -165,6 +165,9 @@ export default function FormationDetail() {
               ))}
             </div>
           </section>
+          <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+            <CommercialAIAssistant formation={{ title, duration, format: formats, domain }} templates={templates} />
+          </section>
         </aside>
       </div>
 
