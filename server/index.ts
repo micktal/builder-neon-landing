@@ -6,6 +6,7 @@ import { createProspect } from "./routes/prospects-create";
 import { seedFormations } from "./routes/seed-formations";
 import { listFormations } from "./routes/formations-list";
 import { getFormation } from "./routes/formations-detail";
+import { importFormations } from "./routes/import-formations";
 
 export function createServer() {
   const app = express();
@@ -33,6 +34,10 @@ export function createServer() {
   // List formations (Builder CMS)
   app.get("/api/formations", listFormations);
   app.get("/api/formations/:id", getFormation);
+
+  // Import formations from CSV
+  app.post("/api/import/formations", importFormations);
+  app.get("/api/import/formations", importFormations);
 
   return app;
 }
