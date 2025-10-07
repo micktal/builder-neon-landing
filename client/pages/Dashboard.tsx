@@ -138,7 +138,6 @@ export default function Dashboard() {
         <h2 className="text-[20px] sm:text-[22px] font-semibold text-slate-900 mb-3">Raccourcis rapides</h2>
         <div className="flex flex-wrap gap-2">
           <Link to="/prospects/new" className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-ring">Créer un nouveau prospect</Link>
-          <Link to="/formations/new" className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-ring">Ajouter une formation</Link>
           <Link to="/templates/new" className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-ring">Ajouter un template</Link>
         </div>
       </section>
