@@ -35,6 +35,9 @@ const SIZES = ["1–49", "50–249", "250–999", "1000+"] as const;
 export default function Prospects() {
   const { toast } = useToast();
 
+  // Data
+  const [data, setData] = useState<Prospect[]>(EMPTY);
+
   // Filters
   const [q, setQ] = useState("");
   const [fSector, setFSector] = useState<string | "">("");
