@@ -32,6 +32,7 @@ export function createServer() {
 
   // List formations (Builder CMS)
   app.get("/api/formations", listFormations);
+  app.get("/api/formations/:id", getFormation);
 
   return app;
 }
