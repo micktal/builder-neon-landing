@@ -29,5 +29,8 @@ export function createServer() {
   app.post("/api/seed/formations", seedFormations);
   app.get("/api/seed/formations", seedFormations);
 
+  // List formations (Builder CMS)
+  app.get("/api/formations", listFormations);
+
   return app;
 }
