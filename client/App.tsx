@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import NouvelleRecherche from "./pages/NouvelleRecherche";
 import Placeholder from "./pages/Placeholder";
+import ProspectNew from "./pages/ProspectNew";
 import Resultats from "./pages/Resultats";
 
 const queryClient = new QueryClient();
