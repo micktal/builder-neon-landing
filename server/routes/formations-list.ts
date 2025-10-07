@@ -10,17 +10,14 @@ export const listFormations: RequestHandler = async (req, res) => {
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("fields", "data,id");
 
-    const resp = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${PRIVATE_KEY}` },
-    });
-
+    const resp = await fetch(url.toString(), { headers: { Authorization: `Bearer ${PRIVATE_KEY}`, Accept: "application/json" } });
+    const txt = await resp.text();
     if (!resp.ok) {
-      const txt = await resp.text();
       return res.status(500).json({ error: "Builder error", detail: txt });
     }
 
-    const json = await resp.json();
-    const results = Array.isArray(json?.results) ? json.results : [];
+    const json = (() => { try { return JSON.parse(txt); } catch { return null; } })();
+    const results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
     const items = results
       .map((r: any) => ({ id: r?.id || r?._id, data: r?.data ?? r }))
       .filter((x: any) => x.id);
