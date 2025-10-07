@@ -29,7 +29,17 @@ export default function Formations() {
       try {
         const res = await fetch(`/api/formations?limit=200`);
         const json = await res.json();
-        setItems(json?.items || []);
+        let list = json?.items || [];
+        // First-run bootstrap: if empty, try importing CSV then refetch once
+        if ((!Array.isArray(list) || list.length === 0)) {
+          const imp = await fetch(`/api/import/formations`);
+          if (imp.ok) {
+            const res2 = await fetch(`/api/formations?limit=200`);
+            const json2 = await res2.json();
+            list = json2?.items || [];
+          }
+        }
+        setItems(list);
       } finally {
         setLoading(false);
       }
