@@ -16,6 +16,7 @@ import ProspectNew from "./pages/ProspectNew";
 import Prospects from "./pages/Prospects";
 import FormationDetail from "./pages/FormationDetail";
 import Resultats from "./pages/Resultats";
+import Formations from "./pages/Formations";
 
 const queryClient = new QueryClient();
 
