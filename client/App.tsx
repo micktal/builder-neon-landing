@@ -33,7 +33,7 @@ const App = () => (
             <Route path="/nouvelle-recherche" element={<NouvelleRecherche />} />
             <Route path="/resultats" element={<Resultats />} />
             <Route path="/prospects" element={<Prospects />} />
-            <Route path="/formations" element={<Placeholder title="Formations" description="Catalogue FPSG avec filtres et fiches détaillées." />} />
+            <Route path="/formations" element={<Formations />} />
             <Route path="/formations/:id" element={<FormationDetail />} />
             <Route path="/templates" element={<Placeholder title="Templates" description="Modèles de speechs et e-mails, prêts à copier/coller." />} />
             <Route path="/prospects/new" element={<ProspectNew />} />
