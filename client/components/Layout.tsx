@@ -58,8 +58,13 @@ export default function Layout({ children }: Props) {
         {children}
       </main>
       <footer className="border-t">
-        <div className="container py-6 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-2">
+        <div className="container py-6 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-3">
           <span>© {new Date().getFullYear()} FPSG • Groupe Fiducial</span>
+          <nav className="flex items-center gap-4">
+            <Link to="/legal" className="hover:text-foreground underline-offset-4 hover:underline">Mentions légales</Link>
+            <Link to="/privacy" className="hover:text-foreground underline-offset-4 hover:underline">Confidentialité</Link>
+            <Link to="/support" className="hover:text-foreground underline-offset-4 hover:underline">Support</Link>
+          </nav>
           <span>Interne — Outil d'aide à la prospection</span>
         </div>
       </footer>
