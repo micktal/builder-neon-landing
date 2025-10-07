@@ -51,5 +51,8 @@ export function createServer() {
   // Prospects list (Builder CMS)
   app.get("/api/prospects", listProspects);
 
+  // AI Assistant
+  app.post("/api/ai/commercial", aiCommercial);
+
   return app;
 }
