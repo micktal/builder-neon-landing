@@ -1,0 +1,68 @@
+import { Link, NavLink } from "react-router-dom";
+import { ReactNode } from "react";
+import { Moon, Sun, Search, Grid2X2, Building2, GraduationCap, FileText } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
+
+interface Props {
+  children: ReactNode;
+}
+
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+    isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent"
+  }`;
+
+export default function Layout({ children }: Props) {
+  return (
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-md bg-primary/90 ring-1 ring-primary/30 flex items-center justify-center text-primary-foreground font-bold">
+              F
+            </div>
+            <div className="leading-tight">
+              <div className="font-bold tracking-tight">FPSG Prospection Assistant</div>
+              <div className="text-xs text-muted-foreground">Fiducial • Sûreté • Sécurité • Prévention</div>
+            </div>
+          </Link>
+          <nav className="hidden md:flex items-center gap-1">
+            <NavLink to="/dashboard" className={navLinkClass}>
+              <Grid2X2 className="h-4 w-4" /> Dashboard
+            </NavLink>
+            <NavLink to="/nouvelle-recherche" className={navLinkClass}>
+              <Search className="h-4 w-4" /> Nouvelle recherche
+            </NavLink>
+            <NavLink to="/prospects" className={navLinkClass}>
+              <Building2 className="h-4 w-4" /> Prospects
+            </NavLink>
+            <NavLink to="/formations" className={navLinkClass}>
+              <GraduationCap className="h-4 w-4" /> Formations
+            </NavLink>
+            <NavLink to="/templates" className={navLinkClass}>
+              <FileText className="h-4 w-4" /> Templates
+            </NavLink>
+          </nav>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/nouvelle-recherche"
+              className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium shadow hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:outline-none"
+            >
+              <Search className="h-4 w-4" /> Nouvelle recherche
+            </Link>
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+      <main className="flex-1">
+        {children}
+      </main>
+      <footer className="border-t">
+        <div className="container py-6 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-2">
+          <span>© {new Date().getFullYear()} FPSG • Groupe Fiducial</span>
+          <span>Interne — Outil d'aide à la prospection</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
