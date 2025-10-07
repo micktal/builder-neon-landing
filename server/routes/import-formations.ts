@@ -46,38 +46,37 @@ function parseCsv(text: string): any[] {
   return items;
 }
 
+function safeParseJson(text: string) { try { return JSON.parse(text); } catch { return null; } }
+
 async function upsertFormation(privKey: string, payload: any) {
   // Try find by name
   const q = new URL("https://builder.io/api/v3/content/formations");
   q.searchParams.set("limit", "1");
   q.searchParams.set("query.name", payload.name);
   q.searchParams.set("fields", "id");
-  const find = await fetch(q.toString(), { headers: { Authorization: `Bearer ${privKey}` } });
-  const found = find.ok ? await find.json() : null;
+  const find = await fetch(q.toString(), { headers: { Authorization: `Bearer ${privKey}`, Accept: "application/json" } });
+  const findTxt = await find.text();
+  const found = find.ok ? safeParseJson(findTxt) : null;
   const existing = Array.isArray(found?.results) && found.results[0];
   if (existing?.id || existing?._id) {
     const id = existing.id || existing._id;
     const resp = await fetch(`https://builder.io/api/v3/content/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}` },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!resp.ok) {
-      const t = await resp.text();
-      throw new Error(`Update failed: ${t}`);
-    }
-    return await resp.json();
+    const txt = await resp.text();
+    if (!resp.ok) throw new Error(`Update failed: ${txt}`);
+    return safeParseJson(txt) ?? { ok: true };
   } else {
     const resp = await fetch("https://builder.io/api/v3/content/formations", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}` },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!resp.ok) {
-      const t = await resp.text();
-      throw new Error(`Create failed: ${t}`);
-    }
-    return await resp.json();
+    const txt = await resp.text();
+    if (!resp.ok) throw new Error(`Create failed: ${txt}`);
+    return safeParseJson(txt) ?? { ok: true };
   }
 }
 
