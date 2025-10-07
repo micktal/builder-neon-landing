@@ -17,6 +17,7 @@ import FormationDetail from "./pages/FormationDetail";
 import Resultats from "./pages/Resultats";
 import Formations from "./pages/Formations";
 import Templates from "./pages/Templates";
+import Analytics from "./pages/Analytics";
 
 const App = () => (
   <TooltipProvider>
