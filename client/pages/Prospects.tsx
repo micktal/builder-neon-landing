@@ -90,6 +90,52 @@ export default function Prospects() {
   const selectedIds = Object.keys(selected).filter((id) => selected[id]);
   const selectedRows = (data || EMPTY).filter((p) => p.id && selectedIds.includes(p.id));
 
+  // CSV helpers
+  const toCsv = (rows: Prospect[]) => {
+    const headers = [
+      "company_name","sector","region","size_band",
+      "priority_score","preferred_format",
+      "contact_name","contact_role","contact_email","contact_phone",
+      "training_history","notes",
+    ];
+    const escape = (v: any) => {
+      if (v === null || v === undefined) return "";
+      const s = String(v).replace(/\r?\n/g, " ").replace(/"/g, '""');
+      return `"${s}"`;
+    };
+    const lines = [headers.join(",")];
+    rows.forEach((r) => {
+      const c0: Partial<Contact> = Array.isArray(r.contacts) && r.contacts.length ? r.contacts[0] : {};
+      lines.push([
+        r.company_name, r.sector, r.region, r.size_band || "",
+        r.priority_score ?? "", r.preferred_format || "",
+        c0.name || "", c0.role || "", c0.email || "", c0.phone || "",
+        r.training_history || "", r.notes || "",
+      ].map(escape).join(","));
+    });
+    return lines.join("\n");
+  };
+  const downloadCsv = (filename: string, text: string) => {
+    const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename; a.style.display = "none";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  };
+  const exportSelection = () => {
+    if (!selectedRows.length) { toast({ title: "Sélectionnez au moins 1 prospect" }); return; }
+    const csv = toCsv(selectedRows);
+    downloadCsv(`prospects_selection_${new Date().toISOString().slice(0,10)}.csv`, csv);
+    toast({ title: "✅ Export de la sélection prêt" });
+  };
+  const exportFiltered = () => {
+    const csv = toCsv(filtered);
+    if (!filtered.length) { toast({ title: "Aucun résultat à exporter" }); return; }
+    downloadCsv(`prospects_filtres_${new Date().toISOString().slice(0,10)}.csv`, csv);
+    toast({ title: "✅ Export des résultats prêt" });
+  };
+
   const copy = async (label: string, text: string) => {
     try { await navigator.clipboard.writeText(text); toast({ title: `${label} copié` }); } catch { toast({ title: "Échec de la copie" }); }
   };
@@ -142,7 +188,13 @@ export default function Prospects() {
               </DialogHeader>
             </DialogContent>
           </Dialog>
-          <button onClick={() => exportCSV(selectedRows.length ? selectedRows : items)} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"><Download className="h-4 w-4"/> Exporter CSV {selectedRows.length ? "(sélection)" : "(page)"}</button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={exportSelection} disabled={selectedRows.length===0} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"><Download className="h-4 w-4"/> Exporter (sélection)</button>
+            </TooltipTrigger>
+            <TooltipContent>Sélectionnez au moins 1 prospect</TooltipContent>
+          </Tooltip>
+          <button onClick={exportFiltered} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"><Download className="h-4 w-4"/> Exporter (résultats filtrés)</button>
         </div>
       </div>
 
@@ -263,7 +315,7 @@ export default function Prospects() {
           <div className="mx-auto max-w-[1200px] px-4 py-2 flex items-center justify-between">
             <div className="text-sm">{selectedRows.length} sélectionné(s)</div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => exportCSV(selectedRows)} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"><Download className="h-4 w-4 inline mr-1"/> Exporter CSV (sélection)</button>
+              <button onClick={exportSelection} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"><Download className="h-4 w-4 inline mr-1"/> Exporter (sélection)</button>
               <button onClick={copyEmails} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"><Mail className="h-4 w-4 inline mr-1"/> Copier e-mails</button>
               <Dialog>
                 <DialogTrigger asChild>
