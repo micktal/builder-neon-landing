@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import NouvelleRecherche from "./pages/NouvelleRecherche";
 import Placeholder from "./pages/Placeholder";
 import ProspectNew from "./pages/ProspectNew";
+import Prospects from "./pages/Prospects";
 import Resultats from "./pages/Resultats";
 
 const queryClient = new QueryClient();
