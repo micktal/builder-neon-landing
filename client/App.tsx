@@ -19,6 +19,7 @@ import Resultats from "./pages/Resultats";
 import Formations from "./pages/Formations";
 import Templates from "./pages/Templates";
 import Analytics from "./pages/Analytics";
+import EspaceFormationInterne from "./pages/EspaceFormationInterne";
 
 const App = () => (
   <TooltipProvider>
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/formations/:id" element={<FormationDetail />} />
           <Route path="/templates" element={<Templates />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/espace-formation-interne" element={<EspaceFormationInterne />} />
           <Route path="/prospects/new" element={<ProspectNew />} />
           <Route path="/templates/new" element={<Placeholder title="Nouveau template" description="Formulaire de création à venir." />} />
           <Route path="/aide" element={<Placeholder title="Aide" description="Documentation et bonnes pratiques (prochainement)." />} />
