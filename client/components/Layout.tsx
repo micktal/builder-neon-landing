@@ -42,6 +42,9 @@ export default function Layout({ children }: Props) {
             <NavLink to="/templates" className={navLinkClass}>
               <FileText className="h-4 w-4" /> Templates
             </NavLink>
+            <NavLink to="/analytics" className={navLinkClass}>
+              <BarChart3 className="h-4 w-4" /> Analytics
+            </NavLink>
           </nav>
           <div className="flex items-center gap-2">
             <Link
