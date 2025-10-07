@@ -21,8 +21,9 @@ export default function FormationDetail() {
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const item = await fetchBuilderItem<any>("formations", id);
-      setFormation(item);
+      const res = await fetch(`/api/formations/${encodeURIComponent(id)}`);
+      const json = await res.json();
+      setFormation(json?.data || null);
       const [{ items: ps }, { items: ts }] = await Promise.all([
         fetchBuilderContent<Prospect>("prospects", { limit: 200, cacheBust: true }),
         fetchBuilderContent<Template>("templates", { limit: 200, cacheBust: true }),
