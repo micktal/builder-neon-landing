@@ -22,19 +22,24 @@ export default function Templates() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      try {
-        const res = await fetch('/api/templates?limit=200');
-        let json = await res.json();
-        let list = json?.items || [];
-        if (!list.length) {
-          const imp = await fetch('/api/import/templates');
-          if (imp.ok) {
-            const res2 = await fetch('/api/templates?limit=200');
-            json = await res2.json();
-            list = json?.items || [];
-          }
+      const fetchJson = async (url: string) => {
+        try {
+          const res = await fetch(url);
+          const txt = await res.text();
+          try { return { ok: res.ok, data: JSON.parse(txt) }; } catch { return { ok: res.ok, data: null }; }
+        } catch (e) {
+          return { ok: false, data: null } as const;
         }
-        setItems(list);
+      };
+      try {
+        let { ok, data } = await fetchJson('/api/templates?limit=200');
+        let list = ok && data?.items ? data.items : [];
+        if (!Array.isArray(list) || list.length === 0) {
+          await fetch('/api/import/templates').catch(() => {});
+          ({ ok, data } = await fetchJson('/api/templates?limit=200'));
+          list = ok && data?.items ? data.items : [];
+        }
+        setItems(Array.isArray(list) ? list : []);
       } finally {
         setLoading(false);
       }
