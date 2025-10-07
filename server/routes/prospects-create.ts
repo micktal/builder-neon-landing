@@ -1,9 +1,8 @@
 import type { RequestHandler } from "express";
 
-const BUILDER_PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
-
 export const createProspect: RequestHandler = async (req, res) => {
   try {
+    const BUILDER_PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
     if (!BUILDER_PRIVATE_KEY) {
       return res.status(500).json({ error: "Missing BUILDER_PRIVATE_KEY" });
     }
