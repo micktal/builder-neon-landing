@@ -14,6 +14,7 @@ import NouvelleRecherche from "./pages/NouvelleRecherche";
 import Placeholder from "./pages/Placeholder";
 import ProspectNew from "./pages/ProspectNew";
 import Prospects from "./pages/Prospects";
+import FormationDetail from "./pages/FormationDetail";
 import Resultats from "./pages/Resultats";
 
 const queryClient = new QueryClient();
