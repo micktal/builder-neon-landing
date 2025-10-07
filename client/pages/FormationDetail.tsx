@@ -165,7 +165,19 @@ export default function FormationDetail() {
         </aside>
       </div>
 
-      <style>{`@media print { header, footer, nav { display: none !important; } body { -webkit-print-color-adjust: exact; color-adjust: exact; } .print\\:hidden{ display: none !important } .print\\:block{ display: block !important } }`}</style>
+      <style>{`
+        @page { size: A4; margin: 12mm; }
+        @media print {
+          header, footer, nav { display: none !important; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11pt; }
+          h1 { font-size: 20pt; }
+          .print\:hidden{ display: none !important }
+          .print\:block{ display: block !important }
+          .print-footer { position: fixed; bottom: 6mm; left: 0; right: 0; text-align: center; font-size: 9pt; color: #6b7280; }
+          .print-footer:after { content: "Page " counter(page); }
+        }
+      `}</style>
+      {printMode && <div className="print-footer"> </div>}
     </div>
   );
 }
