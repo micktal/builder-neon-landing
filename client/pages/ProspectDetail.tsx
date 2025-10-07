@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { ArrowLeft, Mail } from "lucide-react";
 import { fetchBuilderItem } from "@/services/builder";
 import GeneratePDFModal from "@/components/shared/GeneratePDFModal";
+import ScheduleModal from "@/components/shared/ScheduleModal";
 
 interface Contact { name?: string; role?: string; email?: string; phone?: string }
 interface Prospect {
@@ -31,6 +32,7 @@ export default function ProspectDetail() {
   const [prospect, setProspect] = useState<Prospect | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [openPDF, setOpenPDF] = useState(false);
+  const [openSchedule, setOpenSchedule] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -61,6 +63,7 @@ export default function ProspectDetail() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">🧾 Générer proposition PDF</button>
+          <button onClick={() => setOpenSchedule(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">📅 Planifier un RDV</button>
         </div>
       </div>
 
@@ -141,6 +144,8 @@ export default function ProspectDetail() {
         initialProspect={prospect}
         initialTemplates={templates}
       />
+
+      <ScheduleModal open={openSchedule} onClose={() => setOpenSchedule(false)} prospect={prospect} />
     </div>
   );
 }
