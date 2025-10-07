@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import NouvelleRecherche from "./pages/NouvelleRecherche";
 import Placeholder from "./pages/Placeholder";
+import Resultats from "./pages/Resultats";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/nouvelle-recherche" element={<NouvelleRecherche />} />
-            <Route path="/resultats" element={<Placeholder title="Résultats" description="Affichage des formations, prospects et templates filtrés. Nous pourrons brancher les données et filtres dynamiques ensuite." />} />
+            <Route path="/resultats" element={<Resultats />} />
             <Route path="/prospects" element={<Placeholder title="Prospects" description="Liste, fiches et ajout/édition des prospects." />} />
             <Route path="/formations" element={<Placeholder title="Formations" description="Catalogue FPSG avec filtres et fiches détaillées." />} />
             <Route path="/templates" element={<Placeholder title="Templates" description="Modèles de speechs et e-mails, prêts à copier/coller." />} />
