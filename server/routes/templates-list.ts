@@ -1,5 +1,8 @@
 import type { RequestHandler } from "express";
 
+import fs from "fs";
+import path from "path";
+
 export const listTemplates: RequestHandler = async (req, res) => {
   try {
     const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
@@ -15,7 +18,19 @@ export const listTemplates: RequestHandler = async (req, res) => {
       return res.status(500).json({ error: "Builder error", detail: txt });
     }
     const json = (() => { try { return JSON.parse(txt); } catch { return null; } })();
-    const results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
+    let results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
+
+    // Fallback: if no results, try to import from CSV once
+    if (!results.length) {
+      const file = path.join(process.cwd(), "server", "data", "templates.csv");
+      if (fs.existsSync(file)) {
+        await fetch(`${req.protocol}://${req.get("host")}/api/import/templates`).catch(() => {});
+        const resp2 = await fetch(url.toString(), { headers: { Authorization: `Bearer ${PRIVATE_KEY}`, Accept: "application/json" } });
+        const txt2 = await resp2.text();
+        try { const j2 = JSON.parse(txt2); results = Array.isArray(j2?.results) ? j2.results : Array.isArray(j2) ? j2 : []; } catch { /* ignore */ }
+      }
+    }
+
     const items = results.map((r: any) => ({ id: r?.id || r?._id, data: r?.data ?? r })).filter((x: any) => x.id);
     return res.json({ items, total: json?.count ?? json?.total });
   } catch (e: any) {
