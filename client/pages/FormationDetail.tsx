@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ExternalLink, Link as LinkIcon, Mail, Printer, ArrowLeft } from "lucide-react";
 import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
+import CommercialAIAssistant from "@/components/shared/CommercialAIAssistant";
 
 interface Prospect { company_name: string; sector?: string; region?: string; priority_score?: number; contacts?: { name?: string; email?: string }[] }
 interface Template { template_name: string; use_case?: string; domain_filter?: string[]; sector_filter?: string[]; format_filter?: string[]; email_subject?: string; email_body?: string; speech_text?: string }
