@@ -77,7 +77,7 @@ export default function Dashboard() {
       {/* Hero banner */}
       <section className="mb-6">
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5 sm:p-6">
-          <h2 className="text-[22px] sm:text-[24px] font-semibold text-slate-900">Bienvenue, Camille</h2>
+          <h2 className="text-[22px] sm:text-[24px] font-semibold text-slate-900">Bienvenue</h2>
           <p className="mt-1 text-sm sm:text-base text-slate-600">Préparez vos rendez-vous, trouvez des prospects, générez vos e-mails et speechs en 1 clic.</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Chip label="Prospects" value={counts.prospects} />
