@@ -53,6 +53,7 @@ export default function Prospects() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [csvText, setCsvText] = useState("");
+  const [importResult, setImportResult] = useState<any | null>(null);
 
   // Load
   useEffect(() => {
