@@ -95,8 +95,8 @@ export default function ProspectsMap({ items, colorMode = 'score' }: { items: Pr
       <div className="flex items-center justify-between px-2 pb-2">
         <div className="text-sm text-slate-700">Carte des prospects — couleur par {mode === 'score' ? 'score' : 'secteur'}</div>
         <div className="flex items-center gap-2">
-          <button onClick={()=>setMode('score')} className={`rounded-md border px-2 py-1 text-xs ${mode==='score' ? 'bg-blue-600 text-white' : 'bg-white'}`}>Score</button>
-          <button onClick={()=>setMode('sector')} className={`rounded-md border px-2 py-1 text-xs ${mode==='sector' ? 'bg-blue-600 text-white' : 'bg-white'}`}>Secteur</button>
+          <button onClick={()=>setMode('score')} className={`rounded-md border px-2 py-1 text-xs ${mode==='score' ? 'bg-primary text-primary-foreground' : 'bg-white'}`}>Score</button>
+          <button onClick={()=>setMode('sector')} className={`rounded-md border px-2 py-1 text-xs ${mode==='sector' ? 'bg-primary text-primary-foreground' : 'bg-white'}`}>Secteur</button>
         </div>
       </div>
       <div ref={mapRef} style={{ height: 520, borderRadius: 12, overflow: 'hidden' }} />
