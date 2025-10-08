@@ -159,7 +159,7 @@ export default function NouvelleRecherche() {
                 const isDone = currentStep > s.id;
                 return (
                   <div key={s.id} className="flex items-center gap-2">
-                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-semibold ${isActive ? "bg-blue-600 text-white border-blue-600" : isDone ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-50 text-slate-700 border-gray-200"}`}>
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-semibold ${isActive ? "bg-primary text-primary-foreground border-transparent" : isDone ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-700 border-gray-200"}`}>
                       {s.id}
                     </div>
                     <div className={`text-sm ${isActive ? "text-slate-900 font-medium" : "text-slate-600"}`}>{s.label}</div>
@@ -169,7 +169,7 @@ export default function NouvelleRecherche() {
               })}
             </div>
             <div className="relative w-full sm:w-52 h-2 rounded bg-gray-100 overflow-hidden">
-              <div className="h-full bg-blue-500 transition-all" style={{ width: `${progress}%` }} />
+              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
             </div>
           </div>
         </div>
@@ -256,7 +256,7 @@ function Step1({ selectedDomain, onSelect, onCancel, onNext, canContinue }: {
             <button
               key={d}
               onClick={() => onSelect(d)}
-              className={`text-left rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}
+              className={`text-left rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}
             >
               {d}
             </button>
@@ -271,7 +271,7 @@ function Step1({ selectedDomain, onSelect, onCancel, onNext, canContinue }: {
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
           <button onClick={onCancel} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Annuler</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
         </div>
       </MobileSticky>
     </div>
@@ -303,7 +303,7 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
           {AUDIENCES.map((a) => {
             const active = selectedAudiences.includes(a);
             return (
-              <button key={a} onClick={() => toggle(selectedAudiences, setSelectedAudiences, a)} className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}>{a}</button>
+              <button key={a} onClick={() => toggle(selectedAudiences, setSelectedAudiences, a)} className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}>{a}</button>
             );
           })}
         </div>
@@ -315,7 +315,7 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
           {SECTORS.map((s) => {
             const active = selectedSectors.includes(s);
             return (
-              <button key={s} onClick={() => toggle(selectedSectors, setSelectedSectors, s)} className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}>{s}</button>
+              <button key={s} onClick={() => toggle(selectedSectors, setSelectedSectors, s)} className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}>{s}</button>
             );
           })}
         </div>
@@ -323,7 +323,7 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
 
       <div className="mt-5">
         <label className="text-sm font-medium text-slate-900 mb-1 block">Région (optionnelle)</label>
-        <select value={selectedRegion ?? ""} onChange={(e) => setSelectedRegion(e.target.value || null)} className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select value={selectedRegion ?? ""} onChange={(e) => setSelectedRegion(e.target.value || null)} className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
           <option value="">—</option>
           {REGIONS.map((r) => (
             <option key={r} value={r}>{r}</option>
@@ -337,7 +337,7 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
           <button onClick={onPrev} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Précédent</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
         </div>
       </MobileSticky>
     </div>
@@ -358,7 +358,7 @@ function Step3({ selectedFormat, onSelect, onPrev, onNext, canContinue }: {
         {FORMATS.map((f) => {
           const active = selectedFormat === f;
           return (
-            <button key={f} onClick={() => onSelect(f)} className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}>
+            <button key={f} onClick={() => onSelect(f)} className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}>
               {f}
             </button>
           );
@@ -370,7 +370,7 @@ function Step3({ selectedFormat, onSelect, onPrev, onNext, canContinue }: {
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
           <button onClick={onPrev} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Précédent</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
         </div>
       </MobileSticky>
     </div>
@@ -391,7 +391,7 @@ function Step4({ selectedUseCase, onSelect, onPrev, onNext, canContinue }: {
         {USE_CASES.map((u) => {
           const active = selectedUseCase === u;
           return (
-            <button key={u} onClick={() => onSelect(u)} className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}>
+            <button key={u} onClick={() => onSelect(u)} className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}>
               {u}
             </button>
           );
@@ -403,7 +403,7 @@ function Step4({ selectedUseCase, onSelect, onPrev, onNext, canContinue }: {
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
           <button onClick={onPrev} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Précédent</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
         </div>
       </MobileSticky>
     </div>
@@ -435,14 +435,14 @@ function Step5({ data, onBackTo, onCopy, onSeeResults }: {
               <div className="text-sm text-slate-500">{it.label}</div>
               <div className="text-sm font-medium text-slate-900">{it.value}</div>
             </div>
-            <button onClick={() => onBackTo(it.step)} className="text-sm text-blue-700 hover:underline">Modifier</button>
+            <button onClick={() => onBackTo(it.step)} className="text-sm text-primary hover:underline">Modifier</button>
           </div>
         ))}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button onClick={onCopy} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Copier les filtres</button>
-        <button onClick={onSeeResults} className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm font-medium">Voir les résultats</button>
+        <button onClick={onSeeResults} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium">Voir les résultats</button>
       </div>
     </div>
   );
