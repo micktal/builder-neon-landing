@@ -46,6 +46,7 @@ export function createServer() {
 
   // Templates endpoints
   app.get("/api/templates", listTemplates);
+  app.post("/api/templates/create", createTemplate);
   app.post("/api/import/templates", importTemplates);
   app.get("/api/import/templates", importTemplates);
 
