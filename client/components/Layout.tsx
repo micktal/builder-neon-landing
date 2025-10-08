@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { ReactNode } from "react";
-import { Moon, Sun, Search, Grid2X2, Building2, GraduationCap, FileText, BarChart3, BookOpen } from "lucide-react";
+import { Grid2X2, Search, Building2, GraduationCap, FileText, BarChart3, BookOpen, MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ThemeToggle from "./ThemeToggle";
 
 const FPSG_LOGO_URL = "https://cdn.builder.io/api/v1/image/assets%2Fd93d9a0ec7824aa1ac4d890a1f90a2ec%2Fef588347db774ea5a9418f8ecbbd8909?format=webp&width=120";
@@ -41,12 +42,23 @@ export default function Layout({ children }: Props) {
             <NavLink to="/templates" className={navLinkClass}>
               <FileText className="h-4 w-4" /> Templates
             </NavLink>
-            <NavLink to="/analytics" className={navLinkClass}>
-              <BarChart3 className="h-4 w-4" /> Analytics
-            </NavLink>
-            <NavLink to="/espace-formation-interne" className={navLinkClass}>
-              <BookOpen className="h-4 w-4" /> Espace interne
-            </NavLink>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent">
+                <MoreHorizontal className="h-4 w-4" /> Plus
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/analytics" className="inline-flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" /> Analytics
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/espace-formation-interne" className="inline-flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" /> Espace interne
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
