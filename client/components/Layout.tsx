@@ -3,6 +3,8 @@ import { ReactNode } from "react";
 import { Moon, Sun, Search, Grid2X2, Building2, GraduationCap, FileText, BarChart3, BookOpen } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
+const FPSG_LOGO_URL = "https://cdn.builder.io/api/v1/image/assets%2Fd93d9a0ec7824aa1ac4d890a1f90a2ec%2Fef588347db774ea5a9418f8ecbbd8909?format=webp&width=120";
+
 interface Props {
   children: ReactNode;
 }
@@ -18,12 +20,9 @@ export default function Layout({ children }: Props) {
       <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-primary/90 ring-1 ring-primary/30 flex items-center justify-center text-primary-foreground font-bold">
-              F
-            </div>
+            <img src={FPSG_LOGO_URL} alt="FPSG" className="h-8 w-auto" />
             <div className="leading-tight">
               <div className="font-bold tracking-tight">FPSG Prospection Assistant</div>
-              <div className="text-xs text-muted-foreground">Fiducial • Sûreté • Sécurité • Prévention</div>
             </div>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
@@ -65,7 +64,7 @@ export default function Layout({ children }: Props) {
       </main>
       <footer className="border-t">
         <div className="container py-6 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-3">
-          <span>© {new Date().getFullYear()} FPSG • Groupe Fiducial</span>
+          <span className="inline-flex items-center gap-2"><img src={FPSG_LOGO_URL} alt="FPSG" className="h-4 w-auto"/> © {new Date().getFullYear()} FPSG • Groupe Fiducial</span>
           <nav className="flex items-center gap-4">
             <Link to="/legal" className="hover:text-foreground underline-offset-4 hover:underline">Mentions légales</Link>
             <Link to="/privacy" className="hover:text-foreground underline-offset-4 hover:underline">Confidentialité</Link>
