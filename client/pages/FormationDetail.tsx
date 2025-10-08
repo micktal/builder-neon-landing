@@ -93,7 +93,7 @@ export default function FormationDetail() {
           <Tooltip><TooltipTrigger asChild><button onClick={teaserCopy} disabled={!teaser} className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}><LinkIcon className="h-4 w-4"/> Copier teaser</button></TooltipTrigger><TooltipContent>{teaser ? "Copier lien" : "Non disponible"}</TooltipContent></Tooltip>
           <button onClick={() => setOpenCompose(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"><Mail className="h-4 w-4"/> Envoyer proposition e-mail</button>
           <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">🧾 Générer proposition PDF</button>
-          <Tooltip><TooltipTrigger asChild><button onClick={doPrint} className="inline-flex items-center gap-2 rounded-md bg-blue-600 text-white px-3 py-2 text-sm"><Printer className="h-4 w-4"/> Exporter en PDF</button></TooltipTrigger><TooltipContent>Export PDF</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild><button onClick={doPrint} className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"><Printer className="h-4 w-4"/> Exporter en PDF</button></TooltipTrigger><TooltipContent>Export PDF</TooltipContent></Tooltip>
         </div>
       </div>
 
@@ -374,7 +374,7 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
             <button onClick={copyEmail} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Copier e-mail</button>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={mailto} disabled={!canSend} className={`rounded-md px-3 py-2 text-sm ${canSend ? "bg-blue-600 text-white" : "border opacity-60 cursor-not-allowed"}`}>Ouvrir dans e-mail</button>
+                <button onClick={mailto} disabled={!canSend} className={`rounded-md px-3 py-2 text-sm ${canSend ? "bg-primary text-primary-foreground" : "border opacity-60 cursor-not-allowed"}`}>Ouvrir dans e-mail</button>
               </TooltipTrigger>
               <TooltipContent>{canSend ? "Ouvrir votre client e-mail" : "Sélectionnez un prospect et un e-mail"}</TooltipContent>
             </Tooltip>
