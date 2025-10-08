@@ -15,8 +15,25 @@ export function todayFR() {
   return new Date().toLocaleDateString('fr-FR');
 }
 
-// Replace with a dataURL later if needed
-export const FPSG_LOGO: string | null = null;
+// Logo config
+const FPSG_LOGO_URL = "https://cdn.builder.io/api/v1/image/assets%2Fd93d9a0ec7824aa1ac4d890a1f90a2ec%2Fef588347db774ea5a9418f8ecbbd8909?format=webp&width=300";
+let FPSG_LOGO_DATAURL: string | null = null;
+
+async function ensureLogo(): Promise<string | null> {
+  if (FPSG_LOGO_DATAURL) return FPSG_LOGO_DATAURL;
+  if (!FPSG_LOGO_URL) return null;
+  try {
+    const resp = await fetch(FPSG_LOGO_URL);
+    const blob = await resp.blob();
+    const reader = new FileReader();
+    const p = new Promise<string>((resolve) => { reader.onloadend = () => resolve(String(reader.result)); });
+    reader.readAsDataURL(blob);
+    FPSG_LOGO_DATAURL = await p;
+  } catch {
+    FPSG_LOGO_DATAURL = null;
+  }
+  return FPSG_LOGO_DATAURL;
+}
 
 export async function generateProposalPDF({ formation, prospect, contact, template, sales, costOverride }: any) {
   const pdfMake = window.pdfMake;
@@ -35,10 +52,11 @@ export async function generateProposalPDF({ formation, prospect, contact, templa
   const seller = { name: sales?.yourName || "", email: sales?.yourEmail || "", phone: sales?.yourPhone || "" };
 
   const coverStack: any[] = [];
-  if (FPSG_LOGO) {
-    coverStack.push({ image: FPSG_LOGO, width: 140, alignment: 'left', margin:[0,0,0,16] });
+  const LOGO = await ensureLogo();
+  if (LOGO) {
+    coverStack.push({ image: LOGO, width: 140, alignment: 'left', margin:[0,0,0,16] });
   } else {
-    coverStack.push({ text: "FPSG — Fiducial", style: "brand" });
+    coverStack.push({ text: "FPSG", style: "brand" });
   }
   coverStack.push(
     { text: "Proposition de formation", style: "h1", margin:[0,6,0,0] },
