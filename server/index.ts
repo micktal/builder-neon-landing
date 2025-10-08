@@ -12,6 +12,7 @@ import { importTemplates } from "./routes/import-templates";
 import { createTemplate } from "./routes/templates-create";
 import { listProspects } from "./routes/prospects-list";
 import { aiCommercial } from "./routes/ai-commercial";
+import { importProspects } from "./routes/import-prospects";
 
 export function createServer() {
   const app = express();
