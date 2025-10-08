@@ -7,15 +7,25 @@ declare global { interface Window { L?: any } }
 type Prospect = { id?: string; company_name: string; sector?: string; region?: string; priority_score?: number };
 
 const REGION_CENTROIDS: Record<string, [number, number]> = {
-  "IDF": [48.8566, 2.3522], // Paris
-  "PACA": [43.9352, 6.0679],
+  // Abbreviations
+  "IDF": [48.8566, 2.3522],
+  "PACA": [43.2965, 5.3698],
   "ARA": [45.7640, 4.8357],
   "HDF": [50.6292, 3.0573],
   "NA": [44.8378, -0.5792],
-  "GE": [48.5734, 7.7521],
+  "GE": [48.6921, 6.1844],
+  // Full names
+  "Île-de-France": [48.8566, 2.3522],
+  "Ile-de-France": [48.8566, 2.3522],
+  "Auvergne-Rhône-Alpes": [45.7640, 4.8357],
+  "Hauts-de-France": [50.6292, 3.0573],
+  "Grand Est": [48.6921, 6.1844],
+  "Nouvelle-Aquitaine": [44.8378, -0.5792],
+  "Provence-Alpes-Côte d'Azur": [43.2965, 5.3698],
   "Bretagne": [48.1173, -1.6778],
   "Normandie": [49.1829, -0.3707],
   "Occitanie": [43.6047, 1.4442],
+  "Centre-Val de Loire": [47.9029, 1.9093],
   "Corse": [42.0396, 9.0129],
 };
 
