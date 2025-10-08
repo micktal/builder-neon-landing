@@ -129,13 +129,13 @@ export default function Prospects() {
     if (!selectedRows.length) { toast({ title: "Sélectionnez au moins 1 prospect" }); return; }
     const csv = toCsv(selectedRows);
     downloadCsv(`prospects_selection_${new Date().toISOString().slice(0,10)}.csv`, csv);
-    toast({ title: "✅ Export de la sélection prêt" });
+    toast({ title: "Export de la sélection prêt" });
   };
   const exportFiltered = () => {
     const csv = toCsv(filtered);
     if (!filtered.length) { toast({ title: "Aucun résultat à exporter" }); return; }
     downloadCsv(`prospects_filtres_${new Date().toISOString().slice(0,10)}.csv`, csv);
-    toast({ title: "✅ Export des résultats prêt" });
+    toast({ title: "Export des résultats prêt" });
   };
 
   const copy = async (label: string, text: string) => {
