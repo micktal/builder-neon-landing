@@ -49,12 +49,6 @@ export default function Layout({ children }: Props) {
             </NavLink>
           </nav>
           <div className="flex items-center gap-2">
-            <Link
-              to="/nouvelle-recherche"
-              className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium shadow hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:outline-none"
-            >
-              <Search className="h-4 w-4" /> Nouvelle recherche
-            </Link>
             <ThemeToggle />
           </div>
         </div>
