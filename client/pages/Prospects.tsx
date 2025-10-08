@@ -7,7 +7,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Search as SearchIcon, Plus, Upload, Download, Mail, Eye, Clipboard, Filter, Info, Map as MapIcon, List as ListIcon } from "lucide-react";
 
 import { useEffect } from "react";
-import { fetchBuilderContentWithIds } from "@/services/builder";
 import ProspectsMap from "@/components/shared/ProspectsMap";
 
 interface Contact { name: string; role: string; email: string; phone?: string }
@@ -58,8 +57,10 @@ export default function Prospects() {
   // Load
   useEffect(() => {
     (async () => {
-      const { items } = await fetchBuilderContentWithIds<Prospect>("prospects", { limit: 200, cacheBust: true });
-      setData(items.map(i => ({ id: (i as any).id, ...(i as any).data })) as any);
+      const resp = await fetch('/api/prospects');
+      const json = await resp.json();
+      const items = Array.isArray(json?.items) ? json.items : [];
+      setData(items.map((i: any) => ({ id: i.id, ...(i.data || {}) })) as Prospect[]);
     })();
   }, []);
 
@@ -232,8 +233,10 @@ export default function Prospects() {
                       setImportResult(json);
                       if (!resp.ok) throw new Error(json?.error || 'Import failed');
                       toast({ title: `Import: ${json.created} créés, ${json.updated} maj, ${json.errors_count} erreurs` });
-                      const { items } = await fetchBuilderContent<Prospect>('prospects', { limit: 200, cacheBust: true });
-                      setData(items);
+                      const res2 = await fetch('/api/prospects');
+                      const j2 = await res2.json();
+                      const items2 = Array.isArray(j2?.items) ? j2.items : [];
+                      setData(items2.map((i: any) => ({ id: i.id, ...(i.data || {}) })) as Prospect[]);
                     } catch (e: any) {
                       toast({ title: e?.message || "Échec de l'import" });
                     }
