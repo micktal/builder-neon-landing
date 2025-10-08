@@ -148,7 +148,7 @@ export default function ProspectNew() {
       const resp = await fetch("/api/prospects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const json = await resp.json();
       if (!resp.ok || json?.error) throw new Error(json?.error || "Erreur serveur");
-      toast({ title: "✅ Prospect ajouté avec succès !" });
+      toast({ title: "Prospect ajouté avec succès" });
       // navigate vers la liste
       // navigate("/prospects");
     } catch (e: any) {
