@@ -54,6 +54,10 @@ export function createServer() {
   // Prospects list (Builder CMS)
   app.get("/api/prospects", listProspects);
 
+  // Import prospects from CSV (semicolon)
+  app.post("/api/import/prospects", importProspects);
+  app.get("/api/import/prospects", importProspects);
+
   // AI Assistant
   app.post("/api/ai/commercial", aiCommercial);
 
