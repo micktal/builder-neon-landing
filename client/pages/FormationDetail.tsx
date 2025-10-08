@@ -2,17 +2,50 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { fetchBuilderContent, fetchBuilderItem } from "@/services/builder";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { ExternalLink, Link as LinkIcon, Mail, Printer, ArrowLeft } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  ExternalLink,
+  Link as LinkIcon,
+  Mail,
+  Printer,
+  ArrowLeft,
+} from "lucide-react";
 import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
 import CommercialAIAssistant from "@/components/shared/CommercialAIAssistant";
 import GeneratePDFModal from "@/components/shared/GeneratePDFModal";
 
-const FPSG_LOGO_URL = "https://cdn.builder.io/api/v1/image/assets%2Fd93d9a0ec7824aa1ac4d890a1f90a2ec%2Fef588347db774ea5a9418f8ecbbd8909?format=webp&width=200";
+const FPSG_LOGO_URL =
+  "https://cdn.builder.io/api/v1/image/assets%2Fd93d9a0ec7824aa1ac4d890a1f90a2ec%2Fef588347db774ea5a9418f8ecbbd8909?format=webp&width=200";
 
-interface Prospect { company_name: string; sector?: string; region?: string; priority_score?: number; contacts?: { name?: string; email?: string }[] }
-interface Template { template_name: string; use_case?: string; domain_filter?: string[]; sector_filter?: string[]; format_filter?: string[]; email_subject?: string; email_body?: string; speech_text?: string }
+interface Prospect {
+  company_name: string;
+  sector?: string;
+  region?: string;
+  priority_score?: number;
+  contacts?: { name?: string; email?: string }[];
+}
+interface Template {
+  template_name: string;
+  use_case?: string;
+  domain_filter?: string[];
+  sector_filter?: string[];
+  format_filter?: string[];
+  email_subject?: string;
+  email_body?: string;
+  speech_text?: string;
+}
 
 export default function FormationDetail() {
   const { id } = useParams();
@@ -32,18 +65,27 @@ export default function FormationDetail() {
       const json = await res.json();
       setFormation(json?.data || null);
       const [{ items: ps }, tRes] = await Promise.all([
-        fetchBuilderContent<Prospect>("prospects", { limit: 200, cacheBust: true }),
-        fetch('/api/templates?limit=200').then(r => r.json()).catch(() => ({ items: [] })),
+        fetchBuilderContent<Prospect>("prospects", {
+          limit: 200,
+          cacheBust: true,
+        }),
+        fetch("/api/templates?limit=200")
+          .then((r) => r.json())
+          .catch(() => ({ items: [] })),
       ]);
       setProspects(ps);
-      setTemplates(Array.isArray(tRes?.items) ? tRes.items.map((x: any) => x.data) : []);
+      setTemplates(
+        Array.isArray(tRes?.items) ? tRes.items.map((x: any) => x.data) : [],
+      );
     })();
   }, [id]);
 
   const compatibleProspects = useMemo(() => {
     if (!formation?.sectors) return [] as Prospect[];
     const sectors = (formation.sectors as string[]) || [];
-    return prospects.filter((p) => sectors.includes(String(p.sector))).slice(0, 3);
+    return prospects
+      .filter((p) => sectors.includes(String(p.sector)))
+      .slice(0, 3);
   }, [prospects, formation?.sectors]);
 
   const teaserCopy = async () => {
@@ -55,7 +97,10 @@ export default function FormationDetail() {
   const doPrint = () => {
     setPrintMode(true);
     setTimeout(() => {
-      const after = () => { setPrintMode(false); window.removeEventListener("afterprint", after as any); };
+      const after = () => {
+        setPrintMode(false);
+        window.removeEventListener("afterprint", after as any);
+      };
       window.addEventListener("afterprint", after as any);
       window.print();
     }, 50);
@@ -81,25 +126,83 @@ export default function FormationDetail() {
   const teaser = formation.teaser_url as string | undefined;
 
   return (
-    <div className={`container max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8 ${printMode ? "print:pt-0" : ""}`}>
+    <div
+      className={`container max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8 ${printMode ? "print:pt-0" : ""}`}
+    >
       {/* Top actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 print:hidden">
         <div className="flex items-center gap-2">
-          <Link to="/formations" className="inline-flex items-center gap-1 text-sm text-slate-700 hover:underline"><ArrowLeft className="h-4 w-4"/> Retour</Link>
-          <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">{title}</h1>
+          <Link
+            to="/formations"
+            className="inline-flex items-center gap-1 text-sm text-slate-700 hover:underline"
+          >
+            <ArrowLeft className="h-4 w-4" /> Retour
+          </Link>
+          <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">
+            {title}
+          </h1>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Tooltip><TooltipTrigger asChild><a href={pdf || undefined} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}><ExternalLink className="h-4 w-4"/> Voir plaquette</a></TooltipTrigger><TooltipContent>{pdf ? "Ouvrir PDF" : "Non disponible"}</TooltipContent></Tooltip>
-          <Tooltip><TooltipTrigger asChild><button onClick={teaserCopy} disabled={!teaser} className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}><LinkIcon className="h-4 w-4"/> Copier teaser</button></TooltipTrigger><TooltipContent>{teaser ? "Copier lien" : "Non disponible"}</TooltipContent></Tooltip>
-          <button onClick={() => setOpenCompose(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"><Mail className="h-4 w-4"/> Envoyer proposition e-mail</button>
-          <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Générer proposition PDF</button>
-          <Tooltip><TooltipTrigger asChild><button onClick={doPrint} className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"><Printer className="h-4 w-4"/> Exporter en PDF</button></TooltipTrigger><TooltipContent>Export PDF</TooltipContent></Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a
+                href={pdf || undefined}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}
+              >
+                <ExternalLink className="h-4 w-4" /> Voir plaquette
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>
+              {pdf ? "Ouvrir PDF" : "Non disponible"}
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={teaserCopy}
+                disabled={!teaser}
+                className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}
+              >
+                <LinkIcon className="h-4 w-4" /> Copier teaser
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {teaser ? "Copier lien" : "Non disponible"}
+            </TooltipContent>
+          </Tooltip>
+          <button
+            onClick={() => setOpenCompose(true)}
+            className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+          >
+            <Mail className="h-4 w-4" /> Envoyer proposition e-mail
+          </button>
+          <button
+            onClick={() => setOpenPDF(true)}
+            className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+          >
+            Générer proposition PDF
+          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={doPrint}
+                className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"
+              >
+                <Printer className="h-4 w-4" /> Exporter en PDF
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Export PDF</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
       {/* Subtitle */}
       <div className="mt-2 text-sm text-slate-600 print:hidden">
-        <span className="rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 text-[11px]">{domain}</span>
+        <span className="rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 text-[11px]">
+          {domain}
+        </span>
         <span className="mx-2">·</span>
         <span>{duration || "Durée à préciser"}</span>
         <span className="mx-2">·</span>
@@ -111,21 +214,51 @@ export default function FormationDetail() {
         <main className="lg:col-span-2">
           {/* Audiences / sectors / keywords */}
           <div className="flex flex-wrap gap-2 print:hidden">
-            {audiences.map((a) => (<span key={a} className="rounded-full bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 text-[11px]">{a}</span>))}
-            {sectors.map((s) => (<span key={s} className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[11px]">{s}</span>))}
-            {keywords.map((k) => (<span key={k} className="rounded-full bg-gray-100 text-slate-700 border border-gray-200 px-2 py-0.5 text-[11px]">{k}</span>))}
+            {audiences.map((a) => (
+              <span
+                key={a}
+                className="rounded-full bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 text-[11px]"
+              >
+                {a}
+              </span>
+            ))}
+            {sectors.map((s) => (
+              <span
+                key={s}
+                className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[11px]"
+              >
+                {s}
+              </span>
+            ))}
+            {keywords.map((k) => (
+              <span
+                key={k}
+                className="rounded-full bg-gray-100 text-slate-700 border border-gray-200 px-2 py-0.5 text-[11px]"
+              >
+                {k}
+              </span>
+            ))}
           </div>
 
           <section className="mt-4 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">Objectifs pédagogiques</h2>
-            <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeRich(objectives) }} />
+            <h2 className="text-lg font-semibold text-slate-900 mb-2">
+              Objectifs pédagogiques
+            </h2>
+            <div
+              className="prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: sanitizeRich(objectives) }}
+            />
           </section>
 
           {/* Printable header */}
           {printMode && (
             <div className="mt-6 print:block hidden">
-              <div className="flex items-center justify-center mb-2"><img src={FPSG_LOGO_URL} alt="FPSG" className="h-8 w-auto"/></div>
-              <div className="text-center text-sm text-slate-700">FPSG — Formation • {new Date().toLocaleDateString()}</div>
+              <div className="flex items-center justify-center mb-2">
+                <img src={FPSG_LOGO_URL} alt="FPSG" className="h-8 w-auto" />
+              </div>
+              <div className="text-center text-sm text-slate-700">
+                FPSG — Formation • {new Date().toLocaleDateString()}
+              </div>
             </div>
           )}
 
@@ -133,47 +266,102 @@ export default function FormationDetail() {
           {printMode && (
             <section className="mt-4 border-t pt-4 print:block hidden">
               <div className="text-xl font-bold">{title}</div>
-              <div className="text-sm text-slate-700">{domain} • {duration} • {formats.join(", ")}</div>
-              <div className="mt-3 text-sm">Audiences: {audiences.join(", ") || "—"}</div>
-              <div className="text-sm">Secteurs: {sectors.join(", ") || "—"}</div>
-              <div className="mt-3" dangerouslySetInnerHTML={{ __html: sanitizeRich(objectives) }} />
+              <div className="text-sm text-slate-700">
+                {domain} • {duration} • {formats.join(", ")}
+              </div>
+              <div className="mt-3 text-sm">
+                Audiences: {audiences.join(", ") || "—"}
+              </div>
+              <div className="text-sm">
+                Secteurs: {sectors.join(", ") || "—"}
+              </div>
+              <div
+                className="mt-3"
+                dangerouslySetInnerHTML={{ __html: sanitizeRich(objectives) }}
+              />
               {pdf && <div className="mt-3 text-sm">Brochure: {pdf}</div>}
-              <div className="mt-6 text-xs text-slate-500">Astuce : choisissez « Enregistrer au format PDF » dans la boîte d’impression.</div>
+              <div className="mt-6 text-xs text-slate-500">
+                Astuce : choisissez « Enregistrer au format PDF » dans la boîte
+                d’impression.
+              </div>
             </section>
           )}
         </main>
 
         <aside className="space-y-4">
           <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Ressources</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">
+              Ressources
+            </h3>
             <div className="space-y-2">
-              <a href={pdf || undefined} target="_blank" rel="noreferrer" className={`block rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}>Plaquette PDF</a>
-              <button onClick={teaserCopy} disabled={!teaser} className={`block w-full text-left rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}>Copier lien teaser</button>
+              <a
+                href={pdf || undefined}
+                target="_blank"
+                rel="noreferrer"
+                className={`block rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}
+              >
+                Plaquette PDF
+              </a>
+              <button
+                onClick={teaserCopy}
+                disabled={!teaser}
+                className={`block w-full text-left rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}
+              >
+                Copier lien teaser
+              </button>
             </div>
           </section>
           <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Prospects compatibles</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">
+              Prospects compatibles
+            </h3>
             <ul className="space-y-2">
               {compatibleProspects.map((p, i) => (
-                <li key={i} className="text-sm flex items-center justify-between">
+                <li
+                  key={i}
+                  className="text-sm flex items-center justify-between"
+                >
                   <span>{p.company_name}</span>
-                  <span className="text-xs text-slate-600">{p.region || "—"} • {p.priority_score ?? "—"}</span>
+                  <span className="text-xs text-slate-600">
+                    {p.region || "—"} • {p.priority_score ?? "—"}
+                  </span>
                 </li>
               ))}
-              {compatibleProspects.length === 0 && <li className="text-sm text-slate-600">Aucun prospect</li>}
+              {compatibleProspects.length === 0 && (
+                <li className="text-sm text-slate-600">Aucun prospect</li>
+              )}
             </ul>
-            {sectors[0] && <Link to={`/prospects?sector=${encodeURIComponent(sectors[0])}`} className="mt-3 inline-block rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Voir tous les prospects</Link>}
+            {sectors[0] && (
+              <Link
+                to={`/prospects?sector=${encodeURIComponent(sectors[0])}`}
+                className="mt-3 inline-block rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Voir tous les prospects
+              </Link>
+            )}
           </section>
           <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Templates suggérés</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">
+              Templates suggérés
+            </h3>
             <div className="flex flex-wrap gap-2">
               {templates.map((t, i) => (
-                <EmailProposalButton key={i} asBadge formation={formation} templates={[t]} prospects={prospects} presetTemplate={t} />
+                <EmailProposalButton
+                  key={i}
+                  asBadge
+                  formation={formation}
+                  templates={[t]}
+                  prospects={prospects}
+                  presetTemplate={t}
+                />
               ))}
             </div>
           </section>
           <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
-            <CommercialAIAssistant formation={{ title, duration, format: formats, domain }} templates={templates} />
+            <CommercialAIAssistant
+              formation={{ title, duration, format: formats, domain }}
+              templates={templates}
+            />
           </section>
         </aside>
       </div>
@@ -189,7 +377,16 @@ export default function FormationDetail() {
         open={openPDF}
         onClose={() => setOpenPDF(false)}
         context="formation"
-        initialFormation={{ ...formation, title, domain, duration, format: formats, audiences, sectors, objectives }}
+        initialFormation={{
+          ...formation,
+          title,
+          domain,
+          duration,
+          format: formats,
+          audiences,
+          sectors,
+          objectives,
+        }}
         initialTemplates={templates}
         initialProspects={prospects}
       />
@@ -211,31 +408,63 @@ export default function FormationDetail() {
   );
 }
 
-function sanitizeRich(input?: string) { return String(input || "").replace(/<script[^>]*>[\s\S]*?<\/script>/gi, ""); }
+function sanitizeRich(input?: string) {
+  return String(input || "").replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+}
 
-function EmailProposalButton({ asBadge, formation, templates, prospects, presetTemplate }: { asBadge?: boolean; formation: any; templates: Template[]; prospects: Prospect[]; presetTemplate?: Template }) {
+function EmailProposalButton({
+  asBadge,
+  formation,
+  templates,
+  prospects,
+  presetTemplate,
+}: {
+  asBadge?: boolean;
+  formation: any;
+  templates: Template[];
+  prospects: Prospect[];
+  presetTemplate?: Template;
+}) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [prospectId, setProspectId] = useState<number>(-1);
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
-  const [tplName, setTplName] = useState<string>(presetTemplate?.template_name || "");
-  const [yourName, setYourName] = useState<string>(() => localStorage.getItem("fpsg_user_name") || "");
-  const [yourEmail, setYourEmail] = useState<string>(() => localStorage.getItem("fpsg_user_email") || "");
+  const [tplName, setTplName] = useState<string>(
+    presetTemplate?.template_name || "",
+  );
+  const [yourName, setYourName] = useState<string>(
+    () => localStorage.getItem("fpsg_user_name") || "",
+  );
+  const [yourEmail, setYourEmail] = useState<string>(
+    () => localStorage.getItem("fpsg_user_email") || "",
+  );
   const [subjectTpl, setSubjectTpl] = useState<string>("");
   const [bodyTpl, setBodyTpl] = useState<string>("");
   const [lockBody, setLockBody] = useState<boolean>(false);
 
   const domain = String(formation?.domain || "");
-  const format0 = String((Array.isArray(formation?.format) ? formation.format[0] : formation?.format) || "");
+  const format0 = String(
+    (Array.isArray(formation?.format)
+      ? formation.format[0]
+      : formation?.format) || "",
+  );
 
   const filteredProspects = useMemo(() => {
     const s = search.toLowerCase();
-    return prospects.filter((p) => !s || `${p.company_name} ${p.sector || ""} ${p.region || ""}`.toLowerCase().includes(s));
+    return prospects.filter(
+      (p) =>
+        !s ||
+        `${p.company_name} ${p.sector || ""} ${p.region || ""}`
+          .toLowerCase()
+          .includes(s),
+    );
   }, [search, prospects]);
 
-  const selectedProspect = filteredProspects[prospectId] as Prospect | undefined;
+  const selectedProspect = filteredProspects[prospectId] as
+    | Prospect
+    | undefined;
 
   useEffect(() => {
     if (selectedProspect) {
@@ -245,12 +474,15 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
   }, [prospectId]);
 
   const filteredTemplates = useMemo(() => {
-    const list = templates.filter((t) =>
-      (!t.domain_filter || t.domain_filter.includes(domain)) &&
-      (!t.format_filter || t.format_filter.includes(format0)) &&
-      (!selectedProspect?.sector || !t.sector_filter || (t.sector_filter || []).includes(String(selectedProspect.sector)))
+    const list = templates.filter(
+      (t) =>
+        (!t.domain_filter || t.domain_filter.includes(domain)) &&
+        (!t.format_filter || t.format_filter.includes(format0)) &&
+        (!selectedProspect?.sector ||
+          !t.sector_filter ||
+          (t.sector_filter || []).includes(String(selectedProspect.sector))),
     );
-    return list.length ? list : (templates.length ? [templates[0]] : []);
+    return list.length ? list : templates.length ? [templates[0]] : [];
   }, [templates, domain, format0, selectedProspect?.sector]);
 
   // Preselect first filtered template when opening or when list changes
@@ -264,12 +496,18 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
     if (presetTemplate?.template_name) setTplName(presetTemplate.template_name);
   }, [presetTemplate?.template_name]);
 
-  const currentTemplate = filteredTemplates.find((t) => t.template_name === tplName) || filteredTemplates[0];
+  const currentTemplate =
+    filteredTemplates.find((t) => t.template_name === tplName) ||
+    filteredTemplates[0];
 
   // Initialize or regenerate subject/body templates when template changes
   useEffect(() => {
-    const defSubject = currentTemplate?.email_subject || `Proposition — ${formation?.title || "Formation FPSG"}`;
-    const defBody = currentTemplate?.email_body || `Bonjour {{contact_name}},\nJe vous propose la formation \"{{formation_title}}\" ({{format}}).\nCordialement,\n{{your_name}} — {{your_email}}`;
+    const defSubject =
+      currentTemplate?.email_subject ||
+      `Proposition — ${formation?.title || "Formation FPSG"}`;
+    const defBody =
+      currentTemplate?.email_body ||
+      `Bonjour {{contact_name}},\nJe vous propose la formation \"{{formation_title}}\" ({{format}}).\nCordialement,\n{{your_name}} — {{your_email}}`;
     if (!lockBody) {
       setSubjectTpl(defSubject);
       setBodyTpl(defBody);
@@ -279,23 +517,40 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
   }, [tplName, currentTemplate?.email_subject, currentTemplate?.email_body]);
 
   // Persist user identity
-  useEffect(() => { localStorage.setItem("fpsg_user_name", yourName || ""); }, [yourName]);
-  useEffect(() => { localStorage.setItem("fpsg_user_email", yourEmail || ""); }, [yourEmail]);
+  useEffect(() => {
+    localStorage.setItem("fpsg_user_name", yourName || "");
+  }, [yourName]);
+  useEffect(() => {
+    localStorage.setItem("fpsg_user_email", yourEmail || "");
+  }, [yourEmail]);
 
-  const replace = (s: string) => s
-    .replaceAll("{{company_name}}", String(selectedProspect?.company_name || ""))
-    .replaceAll("{{sector}}", String(selectedProspect?.sector || ""))
-    .replaceAll("{{region}}", String(selectedProspect?.region || ""))
-    .replaceAll("{{contact_name}}", contactName)
-    .replaceAll("{{formation_title}}", String(formation?.title || ""))
-    .replaceAll("{{duration}}", String(formation?.duration || ""))
-    .replaceAll("{{format}}", String((Array.isArray(formation?.format) ? formation.format.join(", ") : formation?.format) || ""))
-    .replaceAll("{{domain}}", String(formation?.domain || ""))
-    .replaceAll("{{your_name}}", yourName)
-    .replaceAll("{{your_email}}", yourEmail);
+  const replace = (s: string) =>
+    s
+      .replaceAll(
+        "{{company_name}}",
+        String(selectedProspect?.company_name || ""),
+      )
+      .replaceAll("{{sector}}", String(selectedProspect?.sector || ""))
+      .replaceAll("{{region}}", String(selectedProspect?.region || ""))
+      .replaceAll("{{contact_name}}", contactName)
+      .replaceAll("{{formation_title}}", String(formation?.title || ""))
+      .replaceAll("{{duration}}", String(formation?.duration || ""))
+      .replaceAll(
+        "{{format}}",
+        String(
+          (Array.isArray(formation?.format)
+            ? formation.format.join(", ")
+            : formation?.format) || "",
+        ),
+      )
+      .replaceAll("{{domain}}", String(formation?.domain || ""))
+      .replaceAll("{{your_name}}", yourName)
+      .replaceAll("{{your_email}}", yourEmail);
 
   const copyEmail = async () => {
-    await navigator.clipboard.writeText(`Subject: ${replace(subjectTpl)}\n\n${replace(bodyTpl)}`);
+    await navigator.clipboard.writeText(
+      `Subject: ${replace(subjectTpl)}\n\n${replace(bodyTpl)}`,
+    );
     toast({ title: "E-mail copié" });
   };
 
@@ -306,7 +561,14 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
 
   if (asBadge) {
     return (
-      <button onClick={() => setOpen(true)} className="rounded-full bg-gray-100 text-slate-700 border border-gray-200 px-2 py-0.5 text-[11px]">{presetTemplate?.use_case || presetTemplate?.template_name || "Template"}</button>
+      <button
+        onClick={() => setOpen(true)}
+        className="rounded-full bg-gray-100 text-slate-700 border border-gray-200 px-2 py-0.5 text-[11px]"
+      >
+        {presetTemplate?.use_case ||
+          presetTemplate?.template_name ||
+          "Template"}
+      </button>
     );
   }
 
@@ -315,71 +577,160 @@ function EmailProposalButton({ asBadge, formation, templates, prospects, presetT
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"><Mail className="h-4 w-4"/> Envoyer proposition e-mail</button>
+        <button className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">
+          <Mail className="h-4 w-4" /> Envoyer proposition e-mail
+        </button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Proposition e-mail</DialogTitle>
-          <DialogDescription>Sélectionnez un prospect et un template, puis personnalisez le message.</DialogDescription>
+          <DialogDescription>
+            Sélectionnez un prospect et un template, puis personnalisez le
+            message.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium">Prospect</label>
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher..." className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
-            <select value={prospectId} onChange={(e) => setProspectId(Number(e.target.value))} className="mt-2 w-full rounded-md border px-3 py-2 text-sm">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher..."
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            />
+            <select
+              value={prospectId}
+              onChange={(e) => setProspectId(Number(e.target.value))}
+              className="mt-2 w-full rounded-md border px-3 py-2 text-sm"
+            >
               <option value={-1}>— Choisir —</option>
               {filteredProspects.map((p, idx) => (
-                <option key={idx} value={idx}>{p.company_name} — {p.sector || "—"} / {p.region || "—"}</option>
+                <option key={idx} value={idx}>
+                  {p.company_name} — {p.sector || "—"} / {p.region || "—"}
+                </option>
               ))}
             </select>
             {selectedProspect && (
-              <div className="mt-2 text-xs text-slate-600">Secteur: {selectedProspect.sector || "—"} • Région: {selectedProspect.region || "—"} • Score: {selectedProspect.priority_score ?? "—"}</div>
+              <div className="mt-2 text-xs text-slate-600">
+                Secteur: {selectedProspect.sector || "—"} • Région:{" "}
+                {selectedProspect.region || "—"} • Score:{" "}
+                {selectedProspect.priority_score ?? "—"}
+              </div>
             )}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium">Contact</label>
-              <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Nom contact" className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
+              <input
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder="Nom contact"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium">E-mail</label>
-              <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="email@domaine.com" className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
+              <input
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                placeholder="email@domaine.com"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              />
             </div>
           </div>
           <div>
             <label className="text-sm font-medium">Template</label>
-            <select value={tplName} onChange={(e) => setTplName(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2 text-sm">
-              {filteredTemplates.map((t, i) => (<option key={i} value={t.template_name}>{t.template_name} {t.use_case ? `(${t.use_case})` : ""}</option>))}
+            <select
+              value={tplName}
+              onChange={(e) => setTplName(e.target.value)}
+              className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            >
+              {filteredTemplates.map((t, i) => (
+                <option key={i} value={t.template_name}>
+                  {t.template_name} {t.use_case ? `(${t.use_case})` : ""}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex items-center gap-2">
-            <input id="lock_body" type="checkbox" checked={lockBody} onChange={(e) => setLockBody(e.target.checked)} />
-            <label htmlFor="lock_body" className="text-sm">Verrouiller le corps (conserver mes modifications)</label>
+            <input
+              id="lock_body"
+              type="checkbox"
+              checked={lockBody}
+              onChange={(e) => setLockBody(e.target.checked)}
+            />
+            <label htmlFor="lock_body" className="text-sm">
+              Verrouiller le corps (conserver mes modifications)
+            </label>
           </div>
           <div className="grid grid-cols-1 gap-3">
             <div>
               <label className="text-sm font-medium">Subject</label>
-              <input value={subjectTpl} onChange={(e) => setSubjectTpl(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
+              <input
+                value={subjectTpl}
+                onChange={(e) => setSubjectTpl(e.target.value)}
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium">Body</label>
-              <textarea value={bodyTpl} onChange={(e) => setBodyTpl(e.target.value)} rows={12} className="mt-1 w-full rounded-md border px-3 py-2 text-sm"/>
+              <textarea
+                value={bodyTpl}
+                onChange={(e) => setBodyTpl(e.target.value)}
+                rows={12}
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+              />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input value={yourName} onChange={(e) => setYourName(e.target.value)} placeholder="Votre nom" className="w-full rounded-md border px-3 py-2 text-sm"/>
-            <input value={yourEmail} onChange={(e) => setYourEmail(e.target.value)} placeholder="Votre e-mail" className="w-full rounded-md border px-3 py-2 text-sm"/>
+            <input
+              value={yourName}
+              onChange={(e) => setYourName(e.target.value)}
+              placeholder="Votre nom"
+              className="w-full rounded-md border px-3 py-2 text-sm"
+            />
+            <input
+              value={yourEmail}
+              onChange={(e) => setYourEmail(e.target.value)}
+              placeholder="Votre e-mail"
+              className="w-full rounded-md border px-3 py-2 text-sm"
+            />
           </div>
           <div className="flex flex-wrap gap-2 justify-end">
-            <button onClick={copyEmail} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Copier e-mail</button>
+            <button
+              onClick={copyEmail}
+              className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+            >
+              Copier e-mail
+            </button>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={mailto} disabled={!canSend} className={`rounded-md px-3 py-2 text-sm ${canSend ? "bg-primary text-primary-foreground" : "border opacity-60 cursor-not-allowed"}`}>Ouvrir dans e-mail</button>
+                <button
+                  onClick={mailto}
+                  disabled={!canSend}
+                  className={`rounded-md px-3 py-2 text-sm ${canSend ? "bg-primary text-primary-foreground" : "border opacity-60 cursor-not-allowed"}`}
+                >
+                  Ouvrir dans e-mail
+                </button>
               </TooltipTrigger>
-              <TooltipContent>{canSend ? "Ouvrir votre client e-mail" : "Sélectionnez un prospect et un e-mail"}</TooltipContent>
+              <TooltipContent>
+                {canSend
+                  ? "Ouvrir votre client e-mail"
+                  : "Sélectionnez un prospect et un e-mail"}
+              </TooltipContent>
             </Tooltip>
-            <button onClick={() => setOpen(false)} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Enregistrer comme brouillon</button>
-            <button onClick={() => setOpen(false)} className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Annuler</button>
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+            >
+              Enregistrer comme brouillon
+            </button>
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+            >
+              Annuler
+            </button>
           </div>
         </div>
       </DialogContent>

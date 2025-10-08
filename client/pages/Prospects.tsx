@@ -1,15 +1,49 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Search as SearchIcon, Plus, Upload, Download, Mail, Eye, Clipboard, Filter, Info, Map as MapIcon, List as ListIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Search as SearchIcon,
+  Plus,
+  Upload,
+  Download,
+  Mail,
+  Eye,
+  Clipboard,
+  Filter,
+  Info,
+  Map as MapIcon,
+  List as ListIcon,
+} from "lucide-react";
 
 import { useEffect } from "react";
 import ProspectsMap from "@/components/shared/ProspectsMap";
 
-interface Contact { name: string; role: string; email: string; phone?: string }
+interface Contact {
+  name: string;
+  role: string;
+  email: string;
+  phone?: string;
+}
 interface Prospect {
   id?: string;
   company_name: string;
@@ -28,8 +62,28 @@ interface Prospect {
 
 const EMPTY: Prospect[] = [];
 
-const SECTORS = ["Industrie", "Santé", "Retail/Luxe", "Transport", "BTP", "Tertiaire", "Public", "Éducation"] as const;
-const REGIONS = ["IDF", "PACA", "ARA", "HDF", "NA", "GE", "Bretagne", "Normandie", "Occitanie", "Corse"] as const;
+const SECTORS = [
+  "Industrie",
+  "Santé",
+  "Retail/Luxe",
+  "Transport",
+  "BTP",
+  "Tertiaire",
+  "Public",
+  "Éducation",
+] as const;
+const REGIONS = [
+  "IDF",
+  "PACA",
+  "ARA",
+  "HDF",
+  "NA",
+  "GE",
+  "Bretagne",
+  "Normandie",
+  "Occitanie",
+  "Corse",
+] as const;
 const SIZES = ["1–49", "50–249", "250–999", "1000+"] as const;
 
 export default function Prospects() {
@@ -48,7 +102,7 @@ export default function Prospects() {
 
   // Selection & pagination
   const [selected, setSelected] = useState<Record<string, boolean>>({});
-  const [view, setView] = useState<'list'|'map'>('list');
+  const [view, setView] = useState<"list" | "map">("list");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [csvText, setCsvText] = useState("");
@@ -57,26 +111,33 @@ export default function Prospects() {
   // Load
   useEffect(() => {
     (async () => {
-      const resp = await fetch('/api/prospects');
+      const resp = await fetch("/api/prospects");
       const json = await resp.json();
       const items = Array.isArray(json?.items) ? json.items : [];
-      setData(items.map((i: any) => ({ id: i.id, ...(i.data || {}) })) as Prospect[]);
+      setData(
+        items.map((i: any) => ({ id: i.id, ...(i.data || {}) })) as Prospect[],
+      );
     })();
   }, []);
 
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
     return (data || EMPTY).filter((p) => {
-      const c0 = Array.isArray(p.contacts) && p.contacts.length ? p.contacts[0] : (undefined as any);
-      const matchText = !search || [
-        p.company_name,
-        c0?.name || "",
-        p.notes || "",
-      ].join(" ").toLowerCase().includes(search);
+      const c0 =
+        Array.isArray(p.contacts) && p.contacts.length
+          ? p.contacts[0]
+          : (undefined as any);
+      const matchText =
+        !search ||
+        [p.company_name, c0?.name || "", p.notes || ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(search);
       const matchSector = !fSector || p.sector === fSector;
       const matchRegion = !fRegion || p.region === fRegion;
       const matchSize = !fSize || (p.size_band || "") === fSize;
-      const matchScore = p.priority_score >= scoreMin && p.priority_score <= scoreMax;
+      const matchScore =
+        p.priority_score >= scoreMin && p.priority_score <= scoreMax;
       return matchText && matchSector && matchRegion && matchSize && matchScore;
     });
   }, [q, fSector, fRegion, fSize, scoreMin, scoreMax]);
@@ -92,17 +153,28 @@ export default function Prospects() {
     setSelected(next);
   };
 
-  const toggleOne = (id: string) => setSelected((s) => ({ ...s, [id]: !s[id] }));
+  const toggleOne = (id: string) =>
+    setSelected((s) => ({ ...s, [id]: !s[id] }));
   const selectedIds = Object.keys(selected).filter((id) => selected[id]);
-  const selectedRows = (data || EMPTY).filter((p) => p.id && selectedIds.includes(p.id));
+  const selectedRows = (data || EMPTY).filter(
+    (p) => p.id && selectedIds.includes(p.id),
+  );
 
   // CSV helpers
   const toCsv = (rows: Prospect[]) => {
     const headers = [
-      "company_name","sector","region","size_band",
-      "priority_score","preferred_format",
-      "contact_name","contact_role","contact_email","contact_phone",
-      "training_history","notes",
+      "company_name",
+      "sector",
+      "region",
+      "size_band",
+      "priority_score",
+      "preferred_format",
+      "contact_name",
+      "contact_role",
+      "contact_email",
+      "contact_phone",
+      "training_history",
+      "notes",
     ];
     const escape = (v: any) => {
       if (v === null || v === undefined) return "";
@@ -111,13 +183,26 @@ export default function Prospects() {
     };
     const lines = [headers.join(",")];
     rows.forEach((r) => {
-      const c0: Partial<Contact> = Array.isArray(r.contacts) && r.contacts.length ? r.contacts[0] : {};
-      lines.push([
-        r.company_name, r.sector, r.region, r.size_band || "",
-        r.priority_score ?? "", r.preferred_format || "",
-        c0.name || "", c0.role || "", c0.email || "", c0.phone || "",
-        r.training_history || "", r.notes || "",
-      ].map(escape).join(","));
+      const c0: Partial<Contact> =
+        Array.isArray(r.contacts) && r.contacts.length ? r.contacts[0] : {};
+      lines.push(
+        [
+          r.company_name,
+          r.sector,
+          r.region,
+          r.size_band || "",
+          r.priority_score ?? "",
+          r.preferred_format || "",
+          c0.name || "",
+          c0.role || "",
+          c0.email || "",
+          c0.phone || "",
+          r.training_history || "",
+          r.notes || "",
+        ]
+          .map(escape)
+          .join(","),
+      );
     });
     return lines.join("\n");
   };
@@ -125,31 +210,62 @@ export default function Prospects() {
     const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = filename; a.style.display = "none";
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    a.href = url;
+    a.download = filename;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1500);
   };
   const exportSelection = () => {
-    if (!selectedRows.length) { toast({ title: "Sélectionnez au moins 1 prospect" }); return; }
+    if (!selectedRows.length) {
+      toast({ title: "Sélectionnez au moins 1 prospect" });
+      return;
+    }
     const csv = toCsv(selectedRows);
-    downloadCsv(`prospects_selection_${new Date().toISOString().slice(0,10)}.csv`, csv);
+    downloadCsv(
+      `prospects_selection_${new Date().toISOString().slice(0, 10)}.csv`,
+      csv,
+    );
     toast({ title: "Export de la sélection prêt" });
   };
   const exportFiltered = () => {
     const csv = toCsv(filtered);
-    if (!filtered.length) { toast({ title: "Aucun résultat à exporter" }); return; }
-    downloadCsv(`prospects_filtres_${new Date().toISOString().slice(0,10)}.csv`, csv);
+    if (!filtered.length) {
+      toast({ title: "Aucun résultat à exporter" });
+      return;
+    }
+    downloadCsv(
+      `prospects_filtres_${new Date().toISOString().slice(0, 10)}.csv`,
+      csv,
+    );
     toast({ title: "Export des résultats prêt" });
   };
 
   const copy = async (label: string, text: string) => {
-    try { await navigator.clipboard.writeText(text); toast({ title: `${label} copié` }); } catch { toast({ title: "Échec de la copie" }); }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title: `${label} copié` });
+    } catch {
+      toast({ title: "Échec de la copie" });
+    }
   };
 
   const exportCSV = (rows: Prospect[]) => {
-    const header = ["company_name","sector","region","size_band","contact_name","contact_role","email","priority_score"].join(",");
+    const header = [
+      "company_name",
+      "sector",
+      "region",
+      "size_band",
+      "contact_name",
+      "contact_role",
+      "email",
+      "priority_score",
+    ].join(",");
     const lines = rows.map((r) => {
-      const c0: Partial<Contact> = Array.isArray(r.contacts) && r.contacts.length ? r.contacts[0] : {};
+      const c0: Partial<Contact> =
+        Array.isArray(r.contacts) && r.contacts.length ? r.contacts[0] : {};
       return [
         r.company_name,
         r.sector,
@@ -159,18 +275,34 @@ export default function Prospects() {
         c0.role || "",
         c0.email || "",
         r.priority_score,
-      ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",");
+      ]
+        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+        .join(",");
     });
     const csv = [header, ...lines].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "prospects.csv"; a.click(); URL.revokeObjectURL(url);
+    a.href = url;
+    a.download = "prospects.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  const copyEmails = () => copy("E-mails", selectedRows.map((r) => (Array.isArray(r.contacts) && r.contacts[0]?.email) || "").filter(Boolean).join(";"));
+  const copyEmails = () =>
+    copy(
+      "E-mails",
+      selectedRows
+        .map((r) => (Array.isArray(r.contacts) && r.contacts[0]?.email) || "")
+        .filter(Boolean)
+        .join(";"),
+    );
 
-  const summaryText = (p: Prospect) => { const c0: any = Array.isArray(p.contacts) && p.contacts.length ? p.contacts[0] : {}; return `${p.company_name} — ${p.sector} / ${p.region}\nContact: ${c0.name || ""} (${c0.role || ""}) — ${c0.email || ""}\nScore: ${p.priority_score}/100\nNotes: ${p.notes || "—"}`; };
+  const summaryText = (p: Prospect) => {
+    const c0: any =
+      Array.isArray(p.contacts) && p.contacts.length ? p.contacts[0] : {};
+    return `${p.company_name} — ${p.sector} / ${p.region}\nContact: ${c0.name || ""} (${c0.role || ""}) — ${c0.email || ""}\nScore: ${p.priority_score}/100\nNotes: ${p.notes || "—"}`;
+  };
 
   const scoreBadge = (v: number) => {
     if (v <= 30) return "bg-blue-100 text-blue-700";
@@ -178,80 +310,190 @@ export default function Prospects() {
     return "bg-red-100 text-red-700";
   };
 
-  const resetFilters = () => { setQ(""); setFSector(""); setFRegion(""); setFSize(""); setScoreMin(0); setScoreMax(100); setPage(1); };
+  const resetFilters = () => {
+    setQ("");
+    setFSector("");
+    setFRegion("");
+    setFSize("");
+    setScoreMin(0);
+    setScoreMax(100);
+    setPage(1);
+  };
 
   return (
     <div className="container max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">Prospects <span className="text-sm font-normal text-slate-600">({total})</span></h1>
+        <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">
+          Prospects{" "}
+          <span className="text-sm font-normal text-slate-600">({total})</span>
+        </h1>
         <div className="flex flex-wrap gap-2">
-          <Link to="/prospects/new" className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"><Plus className="h-4 w-4" /> Créer un prospect</Link>
-          <button onClick={()=>setView(view==='list'?'map':'list')} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">
-            {view==='list' ? <><MapIcon className="h-4 w-4"/> Carte</> : <><ListIcon className="h-4 w-4"/> Liste</>}
+          <Link
+            to="/prospects/new"
+            className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"
+          >
+            <Plus className="h-4 w-4" /> Créer un prospect
+          </Link>
+          <button
+            onClick={() => setView(view === "list" ? "map" : "list")}
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+          >
+            {view === "list" ? (
+              <>
+                <MapIcon className="h-4 w-4" /> Carte
+              </>
+            ) : (
+              <>
+                <ListIcon className="h-4 w-4" /> Liste
+              </>
+            )}
           </button>
           <Dialog>
             <DialogTrigger asChild>
-              <button className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"><Upload className="h-4 w-4"/> Importer CSV</button>
+              <button className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">
+                <Upload className="h-4 w-4" /> Importer CSV
+              </button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Importer CSV (séparateur ;)</DialogTitle>
-                <DialogDescription>En-têtes requis: company_name;sector;region;size_band;preferred_format;priority_score;contacts;stage;notes;createdAt</DialogDescription>
+                <DialogDescription>
+                  En-têtes requis:
+                  company_name;sector;region;size_band;preferred_format;priority_score;contacts;stage;notes;createdAt
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-3">
                 <textarea
                   value={csvText}
-                  onChange={(e)=>setCsvText(e.target.value)}
+                  onChange={(e) => setCsvText(e.target.value)}
                   placeholder="Collez votre CSV ici"
                   className="w-full h-48 rounded-md border border-gray-200 bg-white p-2 text-sm font-mono"
                 />
-                <div className="text-xs text-slate-600">Le champ contacts accepte un tableau JSON.</div>
+                <div className="text-xs text-slate-600">
+                  Le champ contacts accepte un tableau JSON.
+                </div>
                 {importResult && (
                   <div className="text-xs text-slate-700 bg-gray-50 border border-gray-200 rounded p-2">
-                    Import: {importResult.created ?? 0} créés, {importResult.updated ?? 0} maj, {importResult.errors_count ?? 0} erreurs
+                    Import: {importResult.created ?? 0} créés,{" "}
+                    {importResult.updated ?? 0} maj,{" "}
+                    {importResult.errors_count ?? 0} erreurs
                   </div>
                 )}
                 <div className="flex items-center justify-between gap-2">
-                  <button onClick={()=>{
-                    const headers = ["company_name","sector","region","size_band","preferred_format","priority_score","contacts","stage","notes","createdAt"];
-                    const contactsJson = JSON.stringify([{ name: "Jean Dupont", email: "jean.dupont@example.com", role: "RH" }]).replace(/"/g,'""');
-                    const row = [
-                      "ACME France","Industrie","IDF","1000+","E-learning","85",
-                      contactsJson,
-                      "Nouveau","Intérêt pour la prévention des risques.","2025-01-01"
-                    ].map(v=>`"${String(v).replace(/\r?\n/g,' ').replace(/"/g,'""')}"`).join(";");
-                    const text = headers.join(";") + "\n" + row;
-                    const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.href = url; a.download = 'prospects_modele.csv'; a.click(); URL.revokeObjectURL(url);
-                  }} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Télécharger modèle CSV</button>
-                  <button disabled={!csvText.trim()} onClick={async()=>{
-                    try {
-                      if (!csvText.trim()) { toast({ title: "Collez un CSV valide" }); return; }
-                      const resp = await fetch('/api/import/prospects', { method: 'POST', headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: csvText });
-                      const json = await resp.json();
-                      setImportResult(json);
-                      if (!resp.ok) throw new Error(json?.error || 'Import failed');
-                      toast({ title: `Import: ${json.created} créés, ${json.updated} maj, ${json.errors_count} erreurs` });
-                      const res2 = await fetch('/api/prospects');
-                      const j2 = await res2.json();
-                      const items2 = Array.isArray(j2?.items) ? j2.items : [];
-                      setData(items2.map((i: any) => ({ id: i.id, ...(i.data || {}) })) as Prospect[]);
-                    } catch (e: any) {
-                      toast({ title: e?.message || "Échec de l'import" });
-                    }
-                  }} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm disabled:opacity-50">Importer</button>
+                  <button
+                    onClick={() => {
+                      const headers = [
+                        "company_name",
+                        "sector",
+                        "region",
+                        "size_band",
+                        "preferred_format",
+                        "priority_score",
+                        "contacts",
+                        "stage",
+                        "notes",
+                        "createdAt",
+                      ];
+                      const contactsJson = JSON.stringify([
+                        {
+                          name: "Jean Dupont",
+                          email: "jean.dupont@example.com",
+                          role: "RH",
+                        },
+                      ]).replace(/"/g, '""');
+                      const row = [
+                        "ACME France",
+                        "Industrie",
+                        "IDF",
+                        "1000+",
+                        "E-learning",
+                        "85",
+                        contactsJson,
+                        "Nouveau",
+                        "Intérêt pour la prévention des risques.",
+                        "2025-01-01",
+                      ]
+                        .map(
+                          (v) =>
+                            `"${String(v).replace(/\r?\n/g, " ").replace(/"/g, '""')}"`,
+                        )
+                        .join(";");
+                      const text = headers.join(";") + "\n" + row;
+                      const blob = new Blob([text], {
+                        type: "text/csv;charset=utf-8;",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = "prospects_modele.csv";
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"
+                  >
+                    Télécharger modèle CSV
+                  </button>
+                  <button
+                    disabled={!csvText.trim()}
+                    onClick={async () => {
+                      try {
+                        if (!csvText.trim()) {
+                          toast({ title: "Collez un CSV valide" });
+                          return;
+                        }
+                        const resp = await fetch("/api/import/prospects", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "text/plain; charset=utf-8",
+                          },
+                          body: csvText,
+                        });
+                        const json = await resp.json();
+                        setImportResult(json);
+                        if (!resp.ok)
+                          throw new Error(json?.error || "Import failed");
+                        toast({
+                          title: `Import: ${json.created} créés, ${json.updated} maj, ${json.errors_count} erreurs`,
+                        });
+                        const res2 = await fetch("/api/prospects");
+                        const j2 = await res2.json();
+                        const items2 = Array.isArray(j2?.items) ? j2.items : [];
+                        setData(
+                          items2.map((i: any) => ({
+                            id: i.id,
+                            ...(i.data || {}),
+                          })) as Prospect[],
+                        );
+                      } catch (e: any) {
+                        toast({ title: e?.message || "Échec de l'import" });
+                      }
+                    }}
+                    className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm disabled:opacity-50"
+                  >
+                    Importer
+                  </button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={exportSelection} disabled={selectedRows.length===0} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"><Download className="h-4 w-4"/> Exporter (sélection)</button>
+              <button
+                onClick={exportSelection}
+                disabled={selectedRows.length === 0}
+                className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-60"
+              >
+                <Download className="h-4 w-4" /> Exporter (sélection)
+              </button>
             </TooltipTrigger>
             <TooltipContent>Sélectionnez au moins 1 prospect</TooltipContent>
           </Tooltip>
-          <button onClick={exportFiltered} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"><Download className="h-4 w-4"/> Exporter (résultats filtrés)</button>
+          <button
+            onClick={exportFiltered}
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+          >
+            <Download className="h-4 w-4" /> Exporter (résultats filtrés)
+          </button>
         </div>
       </div>
 
@@ -259,124 +501,343 @@ export default function Prospects() {
       <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm mb-4">
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
           <div className="lg:col-span-2 flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2">
-            <SearchIcon className="h-4 w-4 text-slate-500"/>
-            <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} className="w-full text-sm focus:outline-none" placeholder="Rechercher entreprise, contact, notes…" />
+            <SearchIcon className="h-4 w-4 text-slate-500" />
+            <input
+              value={q}
+              onChange={(e) => {
+                setQ(e.target.value);
+                setPage(1);
+              }}
+              className="w-full text-sm focus:outline-none"
+              placeholder="Rechercher entreprise, contact, notes…"
+            />
           </div>
-          <select value={fSector} onChange={(e) => { setFSector(e.target.value); setPage(1); }} className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
+          <select
+            value={fSector}
+            onChange={(e) => {
+              setFSector(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+          >
             <option value="">Secteur</option>
-            {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+            {SECTORS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
-          <select value={fRegion} onChange={(e) => { setFRegion(e.target.value); setPage(1); }} className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
+          <select
+            value={fRegion}
+            onChange={(e) => {
+              setFRegion(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+          >
             <option value="">Région</option>
-            {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+            {REGIONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
           </select>
-          <select value={fSize} onChange={(e) => { setFSize(e.target.value); setPage(1); }} className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm">
+          <select
+            value={fSize}
+            onChange={(e) => {
+              setFSize(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+          >
             <option value="">Taille</option>
-            {SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+            {SIZES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 whitespace-nowrap">Score: {scoreMin}–{scoreMax}</span>
-            <input type="range" min={0} max={100} value={scoreMin} onChange={(e) => { setScoreMin(Number(e.target.value)); setPage(1); }} />
-            <input type="range" min={0} max={100} value={scoreMax} onChange={(e) => { setScoreMax(Number(e.target.value)); setPage(1); }} />
+            <span className="text-xs text-slate-600 whitespace-nowrap">
+              Score: {scoreMin}–{scoreMax}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={scoreMin}
+              onChange={(e) => {
+                setScoreMin(Number(e.target.value));
+                setPage(1);
+              }}
+            />
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={scoreMax}
+              onChange={(e) => {
+                setScoreMax(Number(e.target.value));
+                setPage(1);
+              }}
+            />
           </div>
         </div>
         <div className="mt-3">
-          <button onClick={resetFilters} className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"><Filter className="h-4 w-4"/> Réinitialiser filtres</button>
+          <button
+            onClick={resetFilters}
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
+            <Filter className="h-4 w-4" /> Réinitialiser filtres
+          </button>
         </div>
       </div>
 
       {/* Map view */}
-      {view === 'map' && (
+      {view === "map" && (
         <div className="mb-4">
           <ProspectsMap items={filtered} />
         </div>
       )}
 
       {/* Desktop table */}
-      {view === 'list' && (
-      <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="p-3 text-left"><input type="checkbox" onChange={(e) => toggleAll(e.target.checked)} /></th>
-              <th className="p-3 text-left">Entreprise</th>
-              <th className="p-3 text-left">Secteur</th>
-              <th className="p-3 text-left">Région</th>
-              <th className="p-3 text-left">Taille</th>
-              <th className="p-3 text-left">Contact principal</th>
-              <th className="p-3 text-left">E-mail</th>
-              <th className="p-3 text-left">Score</th>
-              <th className="p-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((p) => (
-              <tr key={p.id || p.company_name} className="border-b hover:bg-gray-50">
-                <td className="p-3"><input type="checkbox" checked={!!selected[p.id]} onChange={() => toggleOne(p.id)} /></td>
-                <td className="p-3"><Link to={`/prospects/${p.id}`} className="text-blue-700 hover:underline">{p.company_name}</Link></td>
-                <td className="p-3">{p.sector}</td>
-                <td className="p-3">{p.region}</td>
-                <td className="p-3">{p.size_band}</td>
-                <td className="p-3">{Array.isArray(p.contacts) && p.contacts[0]?.name} {Array.isArray(p.contacts) && p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""}</td>
-                <td className="p-3">
-                  <button onClick={() => Array.isArray(p.contacts) && p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: "E-mail copié" }))} className="underline text-blue-700">
-                    {Array.isArray(p.contacts) && p.contacts[0]?.email}
-                  </button>
-                </td>
-                <td className="p-3"><span className={`inline-flex rounded-full px-2 py-0.5 ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span></td>
-                <td className="p-3">
-                  <div className="flex items-center gap-2">
-                    <Tooltip><TooltipTrigger asChild><Link to={`/prospects/${p.id}`} className="p-1 rounded hover:bg-gray-100" aria-label="Ouvrir"><Eye className="h-4 w-4"/></Link></TooltipTrigger><TooltipContent>Ouvrir fiche</TooltipContent></Tooltip>
-                    {Array.isArray(p.contacts) && p.contacts[0]?.email && (
-                      <Tooltip><TooltipTrigger asChild><a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="p-1 rounded hover:bg-gray-100" aria-label="Email"><Mail className="h-4 w-4"/></a></TooltipTrigger><TooltipContent>Mailto</TooltipContent></Tooltip>
-                    )}
-                    <Tooltip><TooltipTrigger asChild><button onClick={() => copy("Résumé", summaryText(p))} className="p-1 rounded hover:bg-gray-100" aria-label="Copier"><Clipboard className="h-4 w-4"/></button></TooltipTrigger><TooltipContent>Copier résumé</TooltipContent></Tooltip>
-                  </div>
-                </td>
+      {view === "list" && (
+        <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="p-3 text-left">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => toggleAll(e.target.checked)}
+                  />
+                </th>
+                <th className="p-3 text-left">Entreprise</th>
+                <th className="p-3 text-left">Secteur</th>
+                <th className="p-3 text-left">Région</th>
+                <th className="p-3 text-left">Taille</th>
+                <th className="p-3 text-left">Contact principal</th>
+                <th className="p-3 text-left">E-mail</th>
+                <th className="p-3 text-left">Score</th>
+                <th className="p-3 text-left">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {items.map((p) => (
+                <tr
+                  key={p.id || p.company_name}
+                  className="border-b hover:bg-gray-50"
+                >
+                  <td className="p-3">
+                    <input
+                      type="checkbox"
+                      checked={!!selected[p.id]}
+                      onChange={() => toggleOne(p.id)}
+                    />
+                  </td>
+                  <td className="p-3">
+                    <Link
+                      to={`/prospects/${p.id}`}
+                      className="text-blue-700 hover:underline"
+                    >
+                      {p.company_name}
+                    </Link>
+                  </td>
+                  <td className="p-3">{p.sector}</td>
+                  <td className="p-3">{p.region}</td>
+                  <td className="p-3">{p.size_band}</td>
+                  <td className="p-3">
+                    {Array.isArray(p.contacts) && p.contacts[0]?.name}{" "}
+                    {Array.isArray(p.contacts) && p.contacts[0]?.role
+                      ? `(${p.contacts[0]?.role})`
+                      : ""}
+                  </td>
+                  <td className="p-3">
+                    <button
+                      onClick={() =>
+                        Array.isArray(p.contacts) &&
+                        p.contacts[0]?.email &&
+                        navigator.clipboard
+                          .writeText(p.contacts[0].email)
+                          .then(() => toast({ title: "E-mail copié" }))
+                      }
+                      className="underline text-blue-700"
+                    >
+                      {Array.isArray(p.contacts) && p.contacts[0]?.email}
+                    </button>
+                  </td>
+                  <td className="p-3">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 ${scoreBadge(p.priority_score)}`}
+                    >
+                      {p.priority_score}
+                    </span>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            to={`/prospects/${p.id}`}
+                            className="p-1 rounded hover:bg-gray-100"
+                            aria-label="Ouvrir"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>Ouvrir fiche</TooltipContent>
+                      </Tooltip>
+                      {Array.isArray(p.contacts) && p.contacts[0]?.email && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a
+                              href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent("Prise de contact FPSG")}`}
+                              className="p-1 rounded hover:bg-gray-100"
+                              aria-label="Email"
+                            >
+                              <Mail className="h-4 w-4" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>Mailto</TooltipContent>
+                        </Tooltip>
+                      )}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => copy("Résumé", summaryText(p))}
+                            className="p-1 rounded hover:bg-gray-100"
+                            aria-label="Copier"
+                          >
+                            <Clipboard className="h-4 w-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Copier résumé</TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Mobile cards */}
-      {view === 'list' && (
-      <div className="md:hidden grid gap-3">
-        {items.map((p) => (
-          <div key={p.id || p.company_name} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="font-semibold text-slate-900">{p.company_name}</div>
-              <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span>
+      {view === "list" && (
+        <div className="md:hidden grid gap-3">
+          {items.map((p) => (
+            <div
+              key={p.id || p.company_name}
+              className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div className="font-semibold text-slate-900">
+                  {p.company_name}
+                </div>
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-xs ${scoreBadge(p.priority_score)}`}
+                >
+                  {p.priority_score}
+                </span>
+              </div>
+              <div className="text-xs text-slate-600">
+                {p.sector} • {p.region} • {p.size_band}
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {Array.isArray(p.contacts) && p.contacts[0]?.name}{" "}
+                {Array.isArray(p.contacts) && p.contacts[0]?.role
+                  ? `(${p.contacts[0]?.role})`
+                  : ""}{" "}
+                —{" "}
+                <button
+                  onClick={() =>
+                    Array.isArray(p.contacts) &&
+                    p.contacts[0]?.email &&
+                    navigator.clipboard
+                      .writeText(p.contacts[0].email)
+                      .then(() => toast({ title: "E-mail copié" }))
+                  }
+                  className="underline text-blue-700"
+                >
+                  {Array.isArray(p.contacts) && p.contacts[0]?.email}
+                </button>
+              </div>
+              {p.notes && (
+                <div className="mt-1 text-sm text-slate-600 line-clamp-2">
+                  {p.notes}
+                </div>
+              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link
+                  to={`/prospects/${p.id}`}
+                  className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"
+                >
+                  Ouvrir
+                </Link>
+                {Array.isArray(p.contacts) && p.contacts[0]?.email && (
+                  <a
+                    href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent("Prise de contact FPSG")}`}
+                    className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm"
+                  >
+                    E-mail
+                  </a>
+                )}
+                <button
+                  onClick={() => copy("Résumé", summaryText(p))}
+                  className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"
+                >
+                  Copier résumé
+                </button>
+              </div>
             </div>
-            <div className="text-xs text-slate-600">{p.sector} • {p.region} • {p.size_band}</div>
-            <div className="mt-1 text-sm text-slate-700">{Array.isArray(p.contacts) && p.contacts[0]?.name} {Array.isArray(p.contacts) && p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""} — <button onClick={() => Array.isArray(p.contacts) && p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: 'E-mail copié' }))} className="underline text-blue-700">{Array.isArray(p.contacts) && p.contacts[0]?.email}</button></div>
-            {p.notes && <div className="mt-1 text-sm text-slate-600 line-clamp-2">{p.notes}</div>}
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Link to={`/prospects/${p.id}`} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Ouvrir</Link>
-              {Array.isArray(p.contacts) && p.contacts[0]?.email && <a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">E-mail</a>}
-              <button onClick={() => copy("Résumé", summaryText(p))} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Copier résumé</button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
       )}
 
       {/* Pagination */}
-      {view === 'list' && (
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="text-sm text-slate-600">{total === 0 ? "Aucun prospect" : `${start + 1}–${Math.min(start + perPage, total)} sur ${total}`}</div>
-        <div className="flex items-center gap-2">
-          <select value={perPage} onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }} className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm">
-            {[10,25,50].map((n) => <option key={n} value={n}>{n}/page</option>)}
-          </select>
-          <div className="flex items-center gap-1">
-            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page===1} className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm disabled:opacity-50">Préc.</button>
-            <div className="px-2 text-sm">Page {page}/{pageCount}</div>
-            <button onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={page===pageCount} className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm disabled:opacity-50">Suiv.</button>
+      {view === "list" && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="text-sm text-slate-600">
+            {total === 0
+              ? "Aucun prospect"
+              : `${start + 1}–${Math.min(start + perPage, total)} sur ${total}`}
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value));
+                setPage(1);
+              }}
+              className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm"
+            >
+              {[10, 25, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}/page
+                </option>
+              ))}
+            </select>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm disabled:opacity-50"
+              >
+                Préc.
+              </button>
+              <div className="px-2 text-sm">
+                Page {page}/{pageCount}
+              </div>
+              <button
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                disabled={page === pageCount}
+                className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm disabled:opacity-50"
+              >
+                Suiv.
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* Bulk actions bar */}
@@ -385,16 +846,32 @@ export default function Prospects() {
           <div className="mx-auto max-w-[1200px] px-4 py-2 flex items-center justify-between">
             <div className="text-sm">{selectedRows.length} sélectionné(s)</div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={exportSelection} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"><Download className="h-4 w-4 inline mr-1"/> Exporter (sélection)</button>
-              <button onClick={copyEmails} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"><Mail className="h-4 w-4 inline mr-1"/> Copier e-mails</button>
+              <button
+                onClick={exportSelection}
+                className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"
+              >
+                <Download className="h-4 w-4 inline mr-1" /> Exporter
+                (sélection)
+              </button>
+              <button
+                onClick={copyEmails}
+                className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"
+              >
+                <Mail className="h-4 w-4 inline mr-1" /> Copier e-mails
+              </button>
               <Dialog>
                 <DialogTrigger asChild>
-                  <button className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm"><Info className="h-4 w-4 inline mr-1"/> Créer campagne e-mail</button>
+                  <button className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">
+                    <Info className="h-4 w-4 inline mr-1" /> Créer campagne
+                    e-mail
+                  </button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Campagne e-mail</DialogTitle>
-                    <DialogDescription>Placeholder — configuration de campagne à venir.</DialogDescription>
+                    <DialogDescription>
+                      Placeholder — configuration de campagne à venir.
+                    </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
@@ -408,7 +885,12 @@ export default function Prospects() {
         <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 text-center text-slate-700">
           Aucun prospect trouvé
           <div className="mt-3">
-            <Link to="/prospects/new" className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Créer un prospect</Link>
+            <Link
+              to="/prospects/new"
+              className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm"
+            >
+              Créer un prospect
+            </Link>
           </div>
         </div>
       )}

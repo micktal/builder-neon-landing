@@ -8,7 +8,12 @@ export const createProspect: RequestHandler = async (req, res) => {
     }
     const body = req.body ?? {};
     // Validate required
-    if (!body.company_name || !body.sector || !body.contacts?.[0]?.contact_name || !body.contacts?.[0]?.email) {
+    if (
+      !body.company_name ||
+      !body.sector ||
+      !body.contacts?.[0]?.contact_name ||
+      !body.contacts?.[0]?.email
+    ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -20,7 +25,7 @@ export const createProspect: RequestHandler = async (req, res) => {
       },
       body: JSON.stringify({
         data: body,
-        published: 'published',
+        published: "published",
       }),
     });
 

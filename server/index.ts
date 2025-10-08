@@ -21,7 +21,11 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(express.text({ type: ["text/plain", "text/csv", "application/octet-stream"] }));
+  app.use(
+    express.text({
+      type: ["text/plain", "text/csv", "application/octet-stream"],
+    }),
+  );
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {

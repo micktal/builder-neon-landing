@@ -1,13 +1,21 @@
 import type { RequestHandler } from "express";
 
-function safeParseJson(text: string) { try { return JSON.parse(text); } catch { return null; } }
+function safeParseJson(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
 
 async function upsertTemplate(privKey: string, payload: any) {
   const q = new URL("https://builder.io/api/v3/content/templates");
   q.searchParams.set("limit", "1");
   q.searchParams.set("query.name", payload.name);
   q.searchParams.set("fields", "id");
-  const find = await fetch(q.toString(), { headers: { Authorization: `Bearer ${privKey}`, Accept: "application/json" } });
+  const find = await fetch(q.toString(), {
+    headers: { Authorization: `Bearer ${privKey}`, Accept: "application/json" },
+  });
   const findText = await find.text();
   const found = find.ok ? safeParseJson(findText) : null;
   const existing = Array.isArray(found?.results) && found.results[0];
@@ -15,7 +23,11 @@ async function upsertTemplate(privKey: string, payload: any) {
     const id = existing.id || existing._id;
     const resp = await fetch(`https://builder.io/api/v3/content/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${privKey}`,
+        Accept: "application/json",
+      },
       body: JSON.stringify(payload),
     });
     const txt = await resp.text();
@@ -24,7 +36,11 @@ async function upsertTemplate(privKey: string, payload: any) {
   } else {
     const resp = await fetch("https://builder.io/api/v3/content/templates", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${privKey}`,
+        Accept: "application/json",
+      },
       body: JSON.stringify(payload),
     });
     const txt = await resp.text();
@@ -36,7 +52,8 @@ async function upsertTemplate(privKey: string, payload: any) {
 export const createTemplate: RequestHandler = async (req, res) => {
   try {
     const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
-    if (!PRIVATE_KEY) return res.status(500).json({ error: "Missing BUILDER_PRIVATE_KEY" });
+    if (!PRIVATE_KEY)
+      return res.status(500).json({ error: "Missing BUILDER_PRIVATE_KEY" });
 
     const {
       template_name,
@@ -51,7 +68,11 @@ export const createTemplate: RequestHandler = async (req, res) => {
     } = req.body || {};
 
     if (!template_name || (!email_body && !speech_text)) {
-      return res.status(400).json({ error: "template_name et au moins email_body ou speech_text requis" });
+      return res
+        .status(400)
+        .json({
+          error: "template_name et au moins email_body ou speech_text requis",
+        });
     }
 
     const payload = {
@@ -73,6 +94,8 @@ export const createTemplate: RequestHandler = async (req, res) => {
     const result = await upsertTemplate(PRIVATE_KEY, payload);
     return res.json({ ok: true, id: result?.id || result?._id || null });
   } catch (e: any) {
-    return res.status(500).json({ error: e?.message || "Create template failed" });
+    return res
+      .status(500)
+      .json({ error: e?.message || "Create template failed" });
   }
 };

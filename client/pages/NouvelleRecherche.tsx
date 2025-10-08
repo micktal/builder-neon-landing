@@ -91,7 +91,14 @@ export default function NouvelleRecherche() {
       default:
         return false;
     }
-  }, [currentStep, selectedDomain, selectedAudiences, selectedSectors, selectedFormat, selectedUseCase]);
+  }, [
+    currentStep,
+    selectedDomain,
+    selectedAudiences,
+    selectedSectors,
+    selectedFormat,
+    selectedUseCase,
+  ]);
 
   const progress = (currentStep / steps.length) * 100;
 
@@ -114,8 +121,10 @@ export default function NouvelleRecherche() {
   const seeResults = () => {
     const params = new URLSearchParams();
     if (selectedDomain) params.set("domain", selectedDomain);
-    if (selectedAudiences.length) params.set("audiences", selectedAudiences.join(","));
-    if (selectedSectors.length) params.set("sectors", selectedSectors.join(","));
+    if (selectedAudiences.length)
+      params.set("audiences", selectedAudiences.join(","));
+    if (selectedSectors.length)
+      params.set("sectors", selectedSectors.join(","));
     if (selectedRegion) params.set("region", selectedRegion);
     if (selectedFormat) params.set("format", selectedFormat);
     if (selectedUseCase) params.set("useCase", selectedUseCase);
@@ -144,11 +153,23 @@ export default function NouvelleRecherche() {
       {/* Top bar: back + stepper controls */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <Link to="/dashboard" className="text-sm text-slate-700 hover:text-slate-900 underline-offset-4 hover:underline">← Retour Dashboard</Link>
-          <button onClick={resetAll} className="text-sm text-slate-600 hover:text-slate-900 underline-offset-4 hover:underline">Reset</button>
+          <Link
+            to="/dashboard"
+            className="text-sm text-slate-700 hover:text-slate-900 underline-offset-4 hover:underline"
+          >
+            ← Retour Dashboard
+          </Link>
+          <button
+            onClick={resetAll}
+            className="text-sm text-slate-600 hover:text-slate-900 underline-offset-4 hover:underline"
+          >
+            Reset
+          </button>
         </div>
 
-        <h1 className="text-[22px] sm:text-[28px] font-extrabold tracking-tight text-slate-900">Nouvelle recherche — Assistant de prospection</h1>
+        <h1 className="text-[22px] sm:text-[28px] font-extrabold tracking-tight text-slate-900">
+          Nouvelle recherche — Assistant de prospection
+        </h1>
 
         {/* Stepper */}
         <div className="rounded-2xl border border-gray-200 bg-white p-3 sm:p-4 shadow-sm">
@@ -159,17 +180,28 @@ export default function NouvelleRecherche() {
                 const isDone = currentStep > s.id;
                 return (
                   <div key={s.id} className="flex items-center gap-2">
-                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-semibold ${isActive ? "bg-primary text-primary-foreground border-transparent" : isDone ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-700 border-gray-200"}`}>
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-semibold ${isActive ? "bg-primary text-primary-foreground border-transparent" : isDone ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-700 border-gray-200"}`}
+                    >
                       {s.id}
                     </div>
-                    <div className={`text-sm ${isActive ? "text-slate-900 font-medium" : "text-slate-600"}`}>{s.label}</div>
-                    {idx < steps.length - 1 && <div className="hidden sm:block mx-3 h-px w-12 bg-gray-200" />}
+                    <div
+                      className={`text-sm ${isActive ? "text-slate-900 font-medium" : "text-slate-600"}`}
+                    >
+                      {s.label}
+                    </div>
+                    {idx < steps.length - 1 && (
+                      <div className="hidden sm:block mx-3 h-px w-12 bg-gray-200" />
+                    )}
                   </div>
                 );
               })}
             </div>
             <div className="relative w-full sm:w-52 h-2 rounded bg-gray-100 overflow-hidden">
-              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+              <div
+                className="h-full bg-primary transition-all"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </div>
         </div>
@@ -182,7 +214,7 @@ export default function NouvelleRecherche() {
             <Step1
               selectedDomain={selectedDomain}
               onSelect={setSelectedDomain}
-              onCancel={() => navigate('/dashboard')}
+              onCancel={() => navigate("/dashboard")}
               onNext={goNext}
               canContinue={canContinue}
             />
@@ -220,7 +252,14 @@ export default function NouvelleRecherche() {
           )}
           {currentStep === 5 && (
             <Step5
-              data={{ selectedDomain, selectedAudiences, selectedSectors, selectedRegion, selectedFormat, selectedUseCase }}
+              data={{
+                selectedDomain,
+                selectedAudiences,
+                selectedSectors,
+                selectedRegion,
+                selectedFormat,
+                selectedUseCase,
+              }}
               onBackTo={(n) => setCurrentStep(n)}
               onCopy={copyFilters}
               onSeeResults={seeResults}
@@ -239,7 +278,13 @@ export default function NouvelleRecherche() {
   );
 }
 
-function Step1({ selectedDomain, onSelect, onCancel, onNext, canContinue }: {
+function Step1({
+  selectedDomain,
+  onSelect,
+  onCancel,
+  onNext,
+  canContinue,
+}: {
   selectedDomain: string | null;
   onSelect: (v: string) => void;
   onCancel: () => void;
@@ -248,7 +293,9 @@ function Step1({ selectedDomain, onSelect, onCancel, onNext, canContinue }: {
 }) {
   return (
     <div>
-      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">Choisissez le domaine</h2>
+      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">
+        Choisissez le domaine
+      </h2>
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
         {DOMAINS.map((d) => {
           const active = selectedDomain === d;
@@ -264,21 +311,43 @@ function Step1({ selectedDomain, onSelect, onCancel, onNext, canContinue }: {
         })}
       </div>
       <div className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-xs text-slate-600">
-        Exemples de modules: gestion de conflits clients, situations agressives, médiation (placeholder).
+        Exemples de modules: gestion de conflits clients, situations agressives,
+        médiation (placeholder).
       </div>
 
       <div className="h-16" />
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
-          <button onClick={onCancel} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Annuler</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button
+            onClick={onCancel}
+            className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!canContinue}
+            className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            Suivant
+          </button>
         </div>
       </MobileSticky>
     </div>
   );
 }
 
-function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSelectedSectors, selectedRegion, setSelectedRegion, onPrev, onNext, canContinue }: {
+function Step2({
+  selectedAudiences,
+  setSelectedAudiences,
+  selectedSectors,
+  setSelectedSectors,
+  selectedRegion,
+  setSelectedRegion,
+  onPrev,
+  onNext,
+  canContinue,
+}: {
   selectedAudiences: string[];
   setSelectedAudiences: (v: string[]) => void;
   selectedSectors: string[];
@@ -289,13 +358,21 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
   onNext: () => void;
   canContinue: boolean;
 }) {
-  const toggle = (arr: string[], setArr: (v: string[]) => void, value: string) => {
-    setArr(arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value]);
+  const toggle = (
+    arr: string[],
+    setArr: (v: string[]) => void,
+    value: string,
+  ) => {
+    setArr(
+      arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value],
+    );
   };
 
   return (
     <div>
-      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">Public et secteur visés</h2>
+      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">
+        Public et secteur visés
+      </h2>
 
       <div className="mt-4">
         <div className="text-sm font-medium text-slate-900 mb-2">Audiences</div>
@@ -303,7 +380,15 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
           {AUDIENCES.map((a) => {
             const active = selectedAudiences.includes(a);
             return (
-              <button key={a} onClick={() => toggle(selectedAudiences, setSelectedAudiences, a)} className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}>{a}</button>
+              <button
+                key={a}
+                onClick={() =>
+                  toggle(selectedAudiences, setSelectedAudiences, a)
+                }
+                className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}
+              >
+                {a}
+              </button>
             );
           })}
         </div>
@@ -315,36 +400,69 @@ function Step2({ selectedAudiences, setSelectedAudiences, selectedSectors, setSe
           {SECTORS.map((s) => {
             const active = selectedSectors.includes(s);
             return (
-              <button key={s} onClick={() => toggle(selectedSectors, setSelectedSectors, s)} className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}>{s}</button>
+              <button
+                key={s}
+                onClick={() => toggle(selectedSectors, setSelectedSectors, s)}
+                className={`rounded-full border px-3 py-1.5 text-sm transition ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-100 text-slate-700 border-gray-200 hover:bg-gray-200"}`}
+              >
+                {s}
+              </button>
             );
           })}
         </div>
       </div>
 
       <div className="mt-5">
-        <label className="text-sm font-medium text-slate-900 mb-1 block">Région (optionnelle)</label>
-        <select value={selectedRegion ?? ""} onChange={(e) => setSelectedRegion(e.target.value || null)} className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        <label className="text-sm font-medium text-slate-900 mb-1 block">
+          Région (optionnelle)
+        </label>
+        <select
+          value={selectedRegion ?? ""}
+          onChange={(e) => setSelectedRegion(e.target.value || null)}
+          className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        >
           <option value="">—</option>
           {REGIONS.map((r) => (
-            <option key={r} value={r}>{r}</option>
+            <option key={r} value={r}>
+              {r}
+            </option>
           ))}
         </select>
       </div>
 
-      <div className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-xs text-slate-600">Ces critères aideront à suggérer des prospects et templates pertinents.</div>
+      <div className="mt-4 rounded-lg border border-gray-200 bg-white p-3 text-xs text-slate-600">
+        Ces critères aideront à suggérer des prospects et templates pertinents.
+      </div>
 
       <div className="h-16" />
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
-          <button onClick={onPrev} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Précédent</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button
+            onClick={onPrev}
+            className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            Précédent
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!canContinue}
+            className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            Suivant
+          </button>
         </div>
       </MobileSticky>
     </div>
   );
 }
 
-function Step3({ selectedFormat, onSelect, onPrev, onNext, canContinue }: {
+function Step3({
+  selectedFormat,
+  onSelect,
+  onPrev,
+  onNext,
+  canContinue,
+}: {
   selectedFormat: string | null;
   onSelect: (v: string) => void;
   onPrev: () => void;
@@ -353,31 +471,57 @@ function Step3({ selectedFormat, onSelect, onPrev, onNext, canContinue }: {
 }) {
   return (
     <div>
-      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">Format de formation</h2>
+      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">
+        Format de formation
+      </h2>
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
         {FORMATS.map((f) => {
           const active = selectedFormat === f;
           return (
-            <button key={f} onClick={() => onSelect(f)} className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}>
+            <button
+              key={f}
+              onClick={() => onSelect(f)}
+              className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}
+            >
               {f}
             </button>
           );
         })}
       </div>
-      <p className="mt-3 text-xs text-slate-600">Présentiel = ateliers concrets ; Distanciel = visio ; Blended = mix ; E-learning = asynchrone.</p>
+      <p className="mt-3 text-xs text-slate-600">
+        Présentiel = ateliers concrets ; Distanciel = visio ; Blended = mix ;
+        E-learning = asynchrone.
+      </p>
 
       <div className="h-16" />
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
-          <button onClick={onPrev} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Précédent</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button
+            onClick={onPrev}
+            className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            Précédent
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!canContinue}
+            className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            Suivant
+          </button>
         </div>
       </MobileSticky>
     </div>
   );
 }
 
-function Step4({ selectedUseCase, onSelect, onPrev, onNext, canContinue }: {
+function Step4({
+  selectedUseCase,
+  onSelect,
+  onPrev,
+  onNext,
+  canContinue,
+}: {
   selectedUseCase: string | null;
   onSelect: (v: string) => void;
   onPrev: () => void;
@@ -386,40 +530,79 @@ function Step4({ selectedUseCase, onSelect, onPrev, onNext, canContinue }: {
 }) {
   return (
     <div>
-      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">Objectif du contact</h2>
+      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">
+        Objectif du contact
+      </h2>
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
         {USE_CASES.map((u) => {
           const active = selectedUseCase === u;
           return (
-            <button key={u} onClick={() => onSelect(u)} className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}>
+            <button
+              key={u}
+              onClick={() => onSelect(u)}
+              className={`rounded-xl border px-3 py-3 text-sm transition shadow-sm hover:shadow ${active ? "bg-brand-subtle text-primary border-primary/20" : "bg-gray-50 text-slate-800 border-gray-200 hover:bg-gray-100"}`}
+            >
               {u}
             </button>
           );
         })}
       </div>
-      <p className="mt-3 text-xs text-slate-600">Cet objectif permettra de proposer des speechs et e-mails adaptés.</p>
+      <p className="mt-3 text-xs text-slate-600">
+        Cet objectif permettra de proposer des speechs et e-mails adaptés.
+      </p>
 
       <div className="h-16" />
       <MobileSticky>
         <div className="flex items-center justify-between gap-2">
-          <button onClick={onPrev} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Précédent</button>
-          <button onClick={onNext} disabled={!canContinue} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Suivant</button>
+          <button
+            onClick={onPrev}
+            className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            Précédent
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!canContinue}
+            className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            Suivant
+          </button>
         </div>
       </MobileSticky>
     </div>
   );
 }
 
-function Step5({ data, onBackTo, onCopy, onSeeResults }: {
-  data: { selectedDomain: string | null; selectedAudiences: string[]; selectedSectors: string[]; selectedRegion: string | null; selectedFormat: string | null; selectedUseCase: string | null };
+function Step5({
+  data,
+  onBackTo,
+  onCopy,
+  onSeeResults,
+}: {
+  data: {
+    selectedDomain: string | null;
+    selectedAudiences: string[];
+    selectedSectors: string[];
+    selectedRegion: string | null;
+    selectedFormat: string | null;
+    selectedUseCase: string | null;
+  };
   onBackTo: (n: number) => void;
   onCopy: () => void;
   onSeeResults: () => void;
 }) {
   const items: { label: string; value: string; step: number }[] = [
     { label: "Domaine", value: data.selectedDomain ?? "—", step: 1 },
-    { label: "Audiences", value: data.selectedAudiences.join(", ") || "—", step: 2 },
-    { label: "Secteurs", value: data.selectedSectors.join(", ") || "—", step: 2 },
+    {
+      label: "Audiences",
+      value: data.selectedAudiences.join(", ") || "—",
+      step: 2,
+    },
+    {
+      label: "Secteurs",
+      value: data.selectedSectors.join(", ") || "—",
+      step: 2,
+    },
     { label: "Région", value: data.selectedRegion ?? "—", step: 2 },
     { label: "Format", value: data.selectedFormat ?? "—", step: 3 },
     { label: "Objectif", value: data.selectedUseCase ?? "—", step: 4 },
@@ -427,22 +610,41 @@ function Step5({ data, onBackTo, onCopy, onSeeResults }: {
 
   return (
     <div>
-      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">Votre sélection</h2>
+      <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900">
+        Votre sélection
+      </h2>
       <div className="mt-4 rounded-xl border border-gray-200 bg-white shadow-sm divide-y">
         {items.map((it, i) => (
           <div key={i} className="flex items-center justify-between p-3">
             <div>
               <div className="text-sm text-slate-500">{it.label}</div>
-              <div className="text-sm font-medium text-slate-900">{it.value}</div>
+              <div className="text-sm font-medium text-slate-900">
+                {it.value}
+              </div>
             </div>
-            <button onClick={() => onBackTo(it.step)} className="text-sm text-primary hover:underline">Modifier</button>
+            <button
+              onClick={() => onBackTo(it.step)}
+              className="text-sm text-primary hover:underline"
+            >
+              Modifier
+            </button>
           </div>
         ))}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <button onClick={onCopy} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Copier les filtres</button>
-        <button onClick={onSeeResults} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium">Voir les résultats</button>
+        <button
+          onClick={onCopy}
+          className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50"
+        >
+          Copier les filtres
+        </button>
+        <button
+          onClick={onSeeResults}
+          className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium"
+        >
+          Voir les résultats
+        </button>
       </div>
     </div>
   );
@@ -467,11 +669,28 @@ function Tips({ currentStep }: { currentStep: number }) {
 function PreviewMini() {
   return (
     <div>
-      <div className="text-sm font-semibold text-slate-900 mb-2">Aperçu instantané</div>
+      <div className="text-sm font-semibold text-slate-900 mb-2">
+        Aperçu instantané
+      </div>
       <div className="space-y-2 text-sm">
-        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-2"><span>Formations compatibles (exemple)</span><span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-slate-700">Pré-filtré</span></div>
-        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-2"><span>Prospects possibles</span><span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-slate-700">Pré-filtré</span></div>
-        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-2"><span>Templates suggérés</span><span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-slate-700">Pré-filtré</span></div>
+        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-2">
+          <span>Formations compatibles (exemple)</span>
+          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-slate-700">
+            Pré-filtré
+          </span>
+        </div>
+        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-2">
+          <span>Prospects possibles</span>
+          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-slate-700">
+            Pré-filtré
+          </span>
+        </div>
+        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-2">
+          <span>Templates suggérés</span>
+          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-slate-700">
+            Pré-filtré
+          </span>
+        </div>
       </div>
     </div>
   );
