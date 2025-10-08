@@ -57,7 +57,7 @@ async function upsertProspect(privKey: string, data: any) {
     const resp = await fetch(`https://builder.io/api/v3/content/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
-      body: JSON.stringify({ data, published: true }),
+      body: JSON.stringify({ data, published: 'published' }),
     });
     const txt = await resp.text();
     if (!resp.ok) throw new Error(`Update failed: ${txt}`);
@@ -67,7 +67,7 @@ async function upsertProspect(privKey: string, data: any) {
     const resp = await fetch("https://builder.io/api/v3/content/prospects", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
-      body: JSON.stringify({ data, published: true }),
+      body: JSON.stringify({ data, published: 'published' }),
     });
     const txt = await resp.text();
     if (!resp.ok) throw new Error(`Create failed: ${txt}`);
