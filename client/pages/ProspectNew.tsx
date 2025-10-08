@@ -290,7 +290,7 @@ export default function ProspectNew() {
         <div className="mt-4 flex flex-wrap gap-2">
           <button onClick={autoScore} className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">Calculer score automatique</button>
           <button onClick={copySummary} className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">Copier résumé prospect</button>
-          <button onClick={openEmail} className="rounded-md bg-blue-600 text-white px-3 py-2 text-sm">Générer e-mail prise de contact</button>
+          <button onClick={openEmail} className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm">Générer e-mail prise de contact</button>
         </div>
       </section>
 
@@ -310,7 +310,7 @@ export default function ProspectNew() {
         <div className="max-w-[900px] mx-auto flex items-center justify-between gap-2">
           <button onClick={() => navigate('/dashboard')} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Annuler</button>
           <div className="flex gap-2">
-            <button onClick={save} disabled={!requiredOk} className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm font-medium disabled:opacity-50">Enregistrer le prospect</button>
+            <button onClick={save} disabled={!requiredOk} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">Enregistrer le prospect</button>
             <button onClick={openEmail} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Générer un e-mail de prise de contact</button>
           </div>
         </div>
