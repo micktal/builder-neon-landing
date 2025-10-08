@@ -200,7 +200,7 @@ export default function Resultats() {
           </div>
           <div className="hidden sm:flex gap-2">
             <Link to="/nouvelle-recherche" className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">Modifier la recherche</Link>
-            <button onClick={() => toast({ title: "Export CSV à venir" })} className="rounded-md bg-blue-600 text-white px-3 py-2 text-sm">Exporter résultats CSV</button>
+            <button onClick={() => toast({ title: "Export CSV à venir" })} className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm">Exporter résultats CSV</button>
           </div>
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function Resultats() {
           </div>
           <div className="mt-4 flex flex-wrap gap-2 sm:hidden">
             <Link to="/nouvelle-recherche" className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50">Modifier la recherche</Link>
-            <button onClick={() => toast({ title: "Export CSV à venir" })} className="rounded-md bg-blue-600 text-white px-3 py-2 text-sm">Exporter résultats CSV</button>
+            <button onClick={() => toast({ title: "Export CSV à venir" })} className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm">Exporter résultats CSV</button>
           </div>
         </div>
       </section>
@@ -229,7 +229,7 @@ export default function Resultats() {
         <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 text-center text-slate-700">
           Aucune donnée trouvée — ajoutez vos formations et prospects depuis le Dashboard.
           <div className="mt-3">
-            <Link to="/dashboard" className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm">Retour au Dashboard</Link>
+            <Link to="/dashboard" className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Retour au Dashboard</Link>
           </div>
         </div>
       )}
@@ -238,7 +238,7 @@ export default function Resultats() {
       {formations.length > 0 && (
         <section className="mt-8">
           <div className="flex items-center gap-2 mb-3">
-            <GraduationCap className="h-5 w-5 text-blue-600" />
+            <GraduationCap className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-slate-900">Formations correspondantes</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -268,7 +268,7 @@ export default function Resultats() {
       {prospects.length > 0 && (
         <section className="mt-10">
           <div className="flex items-center gap-2 mb-3">
-            <Building2 className="h-5 w-5 text-blue-600" />
+            <Building2 className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-slate-900">Prospects à contacter</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -286,7 +286,7 @@ export default function Resultats() {
                 <div className="mt-2 text-sm text-slate-600 line-clamp-2">{p.notes || p.training_history}</div>
                 <div className="mt-3">
                   <div className="h-2 rounded bg-gray-100 overflow-hidden">
-                    <div className="h-full bg-blue-500" style={{ width: `${p.priority_score}%` }} />
+                    <div className="h-full bg-primary" style={{ width: `${p.priority_score}%` }} />
                   </div>
                   <div className="mt-1 text-xs text-slate-600">Priorité: {p.priority_score}/100</div>
                 </div>
@@ -307,7 +307,7 @@ export default function Resultats() {
       {templates.length > 0 && (
         <section className="mt-10">
           <div className="flex items-center gap-2 mb-3">
-            <FileText className="h-5 w-5 text-blue-600" />
+            <FileText className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-slate-900">Messages et speechs recommandés</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -327,7 +327,7 @@ export default function Resultats() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button onClick={() => copy("Speech", t.speech_text)} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50">Copier Speech</button>
                   <button onClick={() => copy("E-mail", t.email_body)} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50">Copier E-mail</button>
-                  <a href={`mailto:?subject=${encode(t.email_subject)}&body=${encode(t.email_body)}`} className="rounded-md bg-blue-600 text-white px-3 py-1.5 text-sm">Ouvrir dans Outlook</a>
+                  <a href={`mailto:?subject=${encode(t.email_subject)}&body=${encode(t.email_body)}`} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">Ouvrir dans Outlook</a>
                 </div>
               </div>
             ))}
@@ -338,7 +338,7 @@ export default function Resultats() {
       {/* Actions & shortcuts */}
       <section className="mt-10 mb-16 sm:mb-6">
         <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm flex flex-wrap items-center gap-2">
-          <Link to="/nouvelle-recherche" className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm">Nouvelle recherche</Link>
+          <Link to="/nouvelle-recherche" className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Nouvelle recherche</Link>
           <Link to={`/prospects/new?sector=${encode(sectors[0] || "")}&region=${encode(region)}&domain=${encode(domain)}`} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Créer un prospect à partir de ces filtres</Link>
           <button onClick={() => toast({ title: "Téléchargement à venir" })} className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50">Télécharger tous les speechs</button>
         </div>
@@ -359,7 +359,7 @@ export default function Resultats() {
 function Chip({ label, value }: { label: string; value?: string }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-slate-700">
-      <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
       {label}: <strong className="font-semibold">{value || "—"}</strong>
     </span>
   );
