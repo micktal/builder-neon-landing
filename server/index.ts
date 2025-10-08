@@ -11,7 +11,6 @@ import { listTemplates } from "./routes/templates-list";
 import { importTemplates } from "./routes/import-templates";
 import { listProspects } from "./routes/prospects-list";
 import { aiCommercial } from "./routes/ai-commercial";
-import { gcalAuthUrl, gcalCallback, gcalCreateEvent, gcalFreeBusy, gcalStatus } from "./routes/google-calendar";
 
 export function createServer() {
   const app = express();
@@ -54,13 +53,6 @@ export function createServer() {
 
   // AI Assistant
   app.post("/api/ai/commercial", aiCommercial);
-
-  // Google Calendar
-  app.get("/api/gcal/auth-url", gcalAuthUrl);
-  app.get("/api/gcal/callback", gcalCallback);
-  app.get("/api/gcal/status", gcalStatus);
-  app.post("/api/gcal/freebusy", gcalFreeBusy);
-  app.post("/api/gcal/create-event", gcalCreateEvent);
 
   return app;
 }
