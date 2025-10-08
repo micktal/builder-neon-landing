@@ -26,6 +26,8 @@ const REGION_CENTROIDS: Record<string, [number, number]> = {
   "Normandie": [49.1829, -0.3707],
   "Occitanie": [43.6047, 1.4442],
   "Centre-Val de Loire": [47.9029, 1.9093],
+  "Bourgogne-Franche-Comté": [47.3220, 5.0415],
+  "Pays de la Loire": [47.2184, -1.5536],
   "Corse": [42.0396, 9.0129],
 };
 
