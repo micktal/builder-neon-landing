@@ -84,7 +84,7 @@ export default function EspaceFormationInterne() {
   return (
     <div className="container max-w-[1100px] px-4 sm:px-6 py-6 sm:py-8">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">📚 Espace Formation Interne FPSG</h1>
+        <h1 className="text-[22px] sm:text-[28px] font-extrabold text-slate-900">Espace Formation Interne FPSG</h1>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-xs">Progression: {done}/{total} ({pct}%)</Badge>
           <Progress value={pct} className="w-[160px]" />
