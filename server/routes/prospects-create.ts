@@ -20,7 +20,7 @@ export const createProspect: RequestHandler = async (req, res) => {
       },
       body: JSON.stringify({
         data: body,
-        published: false,
+        published: true,
       }),
     });
 
