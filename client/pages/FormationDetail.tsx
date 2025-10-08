@@ -9,6 +9,8 @@ import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
 import CommercialAIAssistant from "@/components/shared/CommercialAIAssistant";
 import GeneratePDFModal from "@/components/shared/GeneratePDFModal";
 
+const FPSG_LOGO_URL = "https://cdn.builder.io/api/v1/image/assets%2Fd93d9a0ec7824aa1ac4d890a1f90a2ec%2Fef588347db774ea5a9418f8ecbbd8909?format=webp&width=200";
+
 interface Prospect { company_name: string; sector?: string; region?: string; priority_score?: number; contacts?: { name?: string; email?: string }[] }
 interface Template { template_name: string; use_case?: string; domain_filter?: string[]; sector_filter?: string[]; format_filter?: string[]; email_subject?: string; email_body?: string; speech_text?: string }
 
@@ -122,6 +124,7 @@ export default function FormationDetail() {
           {/* Printable header */}
           {printMode && (
             <div className="mt-6 print:block hidden">
+              <div className="flex items-center justify-center mb-2"><img src={FPSG_LOGO_URL} alt="FPSG" className="h-8 w-auto"/></div>
               <div className="text-center text-sm text-slate-700">FPSG — Formation • {new Date().toLocaleDateString()}</div>
             </div>
           )}
