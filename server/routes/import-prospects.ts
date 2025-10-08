@@ -1,0 +1,140 @@
+import type { RequestHandler } from "express";
+import fs from "fs";
+import path from "path";
+
+function parseCsvSemicolon(text: string): string[][] {
+  const rows: string[][] = [];
+  let cur: string[] = [];
+  let field = "";
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else { inQuotes = false; }
+      } else { field += ch; }
+    } else {
+      if (ch === '"') { inQuotes = true; }
+      else if (ch === ';') { cur.push(field.trim()); field = ""; }
+      else if (ch === '\n') { cur.push(field.trim()); rows.push(cur); cur = []; field = ""; }
+      else if (ch === '\r') { /* ignore */ }
+      else { field += ch; }
+    }
+  }
+  if (field.length || cur.length) { cur.push(field.trim()); rows.push(cur); }
+  return rows.filter(r => r.length && r.some(c => c.length));
+}
+
+function safeParseJson(text: string) { try { return JSON.parse(text); } catch { return null; } }
+
+function parseContacts(cell?: string): { name?: string; email?: string; role?: string; phone?: string }[] {
+  const raw = (cell || "").trim();
+  if (!raw) return [];
+  // Remove wrapping quotes if present and unescape doubled quotes
+  const unwrapped = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
+  const normalized = unwrapped.replace(/""/g, '"');
+  const json = safeParseJson(normalized);
+  if (Array.isArray(json)) {
+    return json.map((c: any) => ({ name: c?.name || c?.contact_name || "", email: c?.email || "", role: c?.role || "", phone: c?.phone || "" }));
+  }
+  return [];
+}
+
+async function upsertProspect(privKey: string, data: any) {
+  const q = new URL("https://builder.io/api/v3/content/prospects");
+  q.searchParams.set("limit", "1");
+  q.searchParams.set("fields", "id");
+  if (data.company_name) q.searchParams.set("query.data.company_name", data.company_name);
+  if (data.region) q.searchParams.set("query.data.region", data.region);
+  const find = await fetch(q.toString(), { headers: { Authorization: `Bearer ${privKey}`, Accept: "application/json" } });
+  const findTxt = await find.text();
+  const found = find.ok ? safeParseJson(findTxt) : null;
+  const existing = Array.isArray(found?.results) && found.results[0];
+
+  if (existing?.id || existing?._id) {
+    const id = existing.id || existing._id;
+    const resp = await fetch(`https://builder.io/api/v3/content/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
+      body: JSON.stringify({ data, published: true }),
+    });
+    const txt = await resp.text();
+    if (!resp.ok) throw new Error(`Update failed: ${txt}`);
+    return safeParseJson(txt) ?? { ok: true };
+  } else {
+    const resp = await fetch("https://builder.io/api/v3/content/prospects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${privKey}`, Accept: "application/json" },
+      body: JSON.stringify({ data, published: true }),
+    });
+    const txt = await resp.text();
+    if (!resp.ok) throw new Error(`Create failed: ${txt}`);
+    return safeParseJson(txt) ?? { ok: true };
+  }
+}
+
+export const importProspects: RequestHandler = async (req, res) => {
+  try {
+    const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
+    if (!PRIVATE_KEY) return res.status(500).json({ error: "Missing BUILDER_PRIVATE_KEY" });
+
+    let csv = typeof req.body?.csv === 'string' && req.body.csv.trim() ? req.body.csv : "";
+    if (!csv) {
+      const file = path.join(process.cwd(), "server", "data", "prospects.csv");
+      if (!fs.existsSync(file)) return res.status(400).json({ error: "No CSV provided" });
+      csv = fs.readFileSync(file, "utf8");
+    }
+
+    const rows = parseCsvSemicolon(csv);
+    if (!rows.length) return res.status(400).json({ error: "CSV vide ou invalide" });
+
+    const header = rows[0].map(h => h.trim());
+    const idx = (name: string) => header.findIndex(h => h === name);
+    const iCompany = idx('company_name');
+    const iSector = idx('sector');
+    const iRegion = idx('region');
+    const iSize = idx('size_band');
+    const iFmt = idx('preferred_format');
+    const iScore = idx('priority_score');
+    const iContacts = idx('contacts');
+    const iStage = idx('stage');
+    const iNotes = idx('notes');
+    const iCreated = idx('createdAt');
+
+    if (iCompany === -1 || iSector === -1) return res.status(400).json({ error: 'En-têtes requis manquants: company_name, sector' });
+
+    const items = rows.slice(1).map(cols => {
+      const company_name = cols[iCompany];
+      if (!company_name) return null;
+      const contacts = parseContacts(cols[iContacts]);
+      const priority_score = Number(cols[iScore]);
+      const createdAt = cols[iCreated] && !isNaN(Date.parse(cols[iCreated])) ? new Date(cols[iCreated]).toISOString() : undefined;
+      const data: any = {
+        company_name,
+        sector: cols[iSector] || '',
+        region: cols[iRegion] || '',
+        size_band: cols[iSize] || '',
+        preferred_format: cols[iFmt] || '',
+        priority_score: isFinite(priority_score) ? priority_score : undefined,
+        contacts,
+        stage: cols[iStage] || '',
+        notes: cols[iNotes] || '',
+      };
+      if (createdAt) data.createdAt = createdAt;
+      return data;
+    }).filter(Boolean) as any[];
+
+    if (!items.length) return res.status(400).json({ error: 'CSV vide ou invalide' });
+
+    const results: any[] = [];
+    for (const data of items) {
+      const r = await upsertProspect(PRIVATE_KEY, data);
+      results.push({ id: r?.id || r?._id || null, company_name: data.company_name });
+    }
+
+    return res.json({ ok: true, count: results.length, items: results });
+  } catch (e: any) {
+    return res.status(500).json({ error: e?.message || 'Import failed' });
+  }
+};
