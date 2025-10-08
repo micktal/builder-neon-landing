@@ -201,20 +201,39 @@ export default function Prospects() {
                   className="w-full h-48 rounded-md border border-gray-200 bg-white p-2 text-sm font-mono"
                 />
                 <div className="text-xs text-slate-600">Le champ contacts accepte un tableau JSON.</div>
-                <div className="flex justify-end gap-2">
-                  <button onClick={async()=>{
+                {importResult && (
+                  <div className="text-xs text-slate-700 bg-gray-50 border border-gray-200 rounded p-2">
+                    Import: {importResult.created ?? 0} créés, {importResult.updated ?? 0} maj, {importResult.errors_count ?? 0} erreurs
+                  </div>
+                )}
+                <div className="flex items-center justify-between gap-2">
+                  <button onClick={()=>{
+                    const headers = ["company_name","sector","region","size_band","preferred_format","priority_score","contacts","stage","notes","createdAt"];
+                    const contactsJson = JSON.stringify([{ name: "Jean Dupont", email: "jean.dupont@example.com", role: "RH" }]).replace(/"/g,'""');
+                    const row = [
+                      "ACME France","Industrie","IDF","1000+","E-learning","85",
+                      contactsJson,
+                      "Nouveau","Intérêt pour la prévention des risques.","2025-01-01"
+                    ].map(v=>`"${String(v).replace(/\r?\n/g,' ').replace(/"/g,'""')}"`).join(";");
+                    const text = headers.join(";") + "\n" + row;
+                    const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = 'prospects_modele.csv'; a.click(); URL.revokeObjectURL(url);
+                  }} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Télécharger modèle CSV</button>
+                  <button disabled={!csvText.trim()} onClick={async()=>{
                     try {
                       if (!csvText.trim()) { toast({ title: "Collez un CSV valide" }); return; }
-                      const resp = await fetch('/api/import/prospects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csv: csvText }) });
+                      const resp = await fetch('/api/import/prospects', { method: 'POST', headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: csvText });
                       const json = await resp.json();
+                      setImportResult(json);
                       if (!resp.ok) throw new Error(json?.error || 'Import failed');
-                      toast({ title: `${json.count} prospect(s) importé(s)` });
+                      toast({ title: `Import: ${json.created} créés, ${json.updated} maj, ${json.errors_count} erreurs` });
                       const { items } = await fetchBuilderContent<Prospect>('prospects', { limit: 200, cacheBust: true });
                       setData(items);
                     } catch (e: any) {
                       toast({ title: e?.message || "Échec de l'import" });
                     }
-                  }} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">Importer</button>
+                  }} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm disabled:opacity-50">Importer</button>
                 </div>
               </div>
             </DialogContent>
