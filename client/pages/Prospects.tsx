@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Search as SearchIcon, Plus, Upload, Download, Mail, Eye, Clipboard, Filter, Info, Map as MapIcon, List as ListIcon } from "lucide-react";
 
 import { useEffect } from "react";
-import { fetchBuilderContent } from "@/services/builder";
+import { fetchBuilderContentWithIds } from "@/services/builder";
 import ProspectsMap from "@/components/shared/ProspectsMap";
 
 interface Contact { name: string; role: string; email: string; phone?: string }
@@ -58,17 +58,18 @@ export default function Prospects() {
   // Load
   useEffect(() => {
     (async () => {
-      const { items } = await fetchBuilderContent<Prospect>("prospects", { limit: 200, cacheBust: true });
-      setData(items);
+      const { items } = await fetchBuilderContentWithIds<Prospect>("prospects", { limit: 200, cacheBust: true });
+      setData(items.map(i => ({ id: (i as any).id, ...(i as any).data })) as any);
     })();
   }, []);
 
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
     return (data || EMPTY).filter((p) => {
+      const c0 = Array.isArray(p.contacts) && p.contacts.length ? p.contacts[0] : (undefined as any);
       const matchText = !search || [
         p.company_name,
-        p.contacts[0]?.name,
+        c0?.name || "",
         p.notes || "",
       ].join(" ").toLowerCase().includes(search);
       const matchSector = !fSector || p.sector === fSector;
@@ -146,16 +147,19 @@ export default function Prospects() {
 
   const exportCSV = (rows: Prospect[]) => {
     const header = ["company_name","sector","region","size_band","contact_name","contact_role","email","priority_score"].join(",");
-    const lines = rows.map((r) => [
-      r.company_name,
-      r.sector,
-      r.region,
-      r.size_band || "",
-      r.contacts[0]?.name || "",
-      r.contacts[0]?.role || "",
-      r.contacts[0]?.email || "",
-      r.priority_score,
-    ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","));
+    const lines = rows.map((r) => {
+      const c0: Partial<Contact> = Array.isArray(r.contacts) && r.contacts.length ? r.contacts[0] : {};
+      return [
+        r.company_name,
+        r.sector,
+        r.region,
+        r.size_band || "",
+        c0.name || "",
+        c0.role || "",
+        c0.email || "",
+        r.priority_score,
+      ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",");
+    });
     const csv = [header, ...lines].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -163,9 +167,9 @@ export default function Prospects() {
     a.href = url; a.download = "prospects.csv"; a.click(); URL.revokeObjectURL(url);
   };
 
-  const copyEmails = () => copy("E-mails", selectedRows.map((r) => r.contacts[0]?.email).filter(Boolean).join(";"));
+  const copyEmails = () => copy("E-mails", selectedRows.map((r) => (Array.isArray(r.contacts) && r.contacts[0]?.email) || "").filter(Boolean).join(";"));
 
-  const summaryText = (p: Prospect) => `${p.company_name} — ${p.sector} / ${p.region}\nContact: ${p.contacts[0]?.name || ""} (${p.contacts[0]?.role || ""}) — ${p.contacts[0]?.email || ""}\nScore: ${p.priority_score}/100\nNotes: ${p.notes || "—"}`;
+  const summaryText = (p: Prospect) => { const c0: any = Array.isArray(p.contacts) && p.contacts.length ? p.contacts[0] : {}; return `${p.company_name} — ${p.sector} / ${p.region}\nContact: ${c0.name || ""} (${c0.role || ""}) — ${c0.email || ""}\nScore: ${p.priority_score}/100\nNotes: ${p.notes || "—"}`; };
 
   const scoreBadge = (v: number) => {
     if (v <= 30) return "bg-blue-100 text-blue-700";
@@ -310,17 +314,17 @@ export default function Prospects() {
                 <td className="p-3">{p.sector}</td>
                 <td className="p-3">{p.region}</td>
                 <td className="p-3">{p.size_band}</td>
-                <td className="p-3">{p.contacts[0]?.name} {p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""}</td>
+                <td className="p-3">{Array.isArray(p.contacts) && p.contacts[0]?.name} {Array.isArray(p.contacts) && p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""}</td>
                 <td className="p-3">
-                  <button onClick={() => p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: "E-mail copié" }))} className="underline text-blue-700">
-                    {p.contacts[0]?.email}
+                  <button onClick={() => Array.isArray(p.contacts) && p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: "E-mail copié" }))} className="underline text-blue-700">
+                    {Array.isArray(p.contacts) && p.contacts[0]?.email}
                   </button>
                 </td>
                 <td className="p-3"><span className={`inline-flex rounded-full px-2 py-0.5 ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span></td>
                 <td className="p-3">
                   <div className="flex items-center gap-2">
                     <Tooltip><TooltipTrigger asChild><Link to={`/prospects/${p.id}`} className="p-1 rounded hover:bg-gray-100" aria-label="Ouvrir"><Eye className="h-4 w-4"/></Link></TooltipTrigger><TooltipContent>Ouvrir fiche</TooltipContent></Tooltip>
-                    {p.contacts[0]?.email && (
+                    {Array.isArray(p.contacts) && p.contacts[0]?.email && (
                       <Tooltip><TooltipTrigger asChild><a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="p-1 rounded hover:bg-gray-100" aria-label="Email"><Mail className="h-4 w-4"/></a></TooltipTrigger><TooltipContent>Mailto</TooltipContent></Tooltip>
                     )}
                     <Tooltip><TooltipTrigger asChild><button onClick={() => copy("Résumé", summaryText(p))} className="p-1 rounded hover:bg-gray-100" aria-label="Copier"><Clipboard className="h-4 w-4"/></button></TooltipTrigger><TooltipContent>Copier résumé</TooltipContent></Tooltip>
@@ -343,11 +347,11 @@ export default function Prospects() {
               <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${scoreBadge(p.priority_score)}`}>{p.priority_score}</span>
             </div>
             <div className="text-xs text-slate-600">{p.sector} • {p.region} • {p.size_band}</div>
-            <div className="mt-1 text-sm text-slate-700">{p.contacts[0]?.name} {p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""} — <button onClick={() => p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: 'E-mail copié' }))} className="underline text-blue-700">{p.contacts[0]?.email}</button></div>
+            <div className="mt-1 text-sm text-slate-700">{Array.isArray(p.contacts) && p.contacts[0]?.name} {Array.isArray(p.contacts) && p.contacts[0]?.role ? `(${p.contacts[0]?.role})` : ""} — <button onClick={() => Array.isArray(p.contacts) && p.contacts[0]?.email && navigator.clipboard.writeText(p.contacts[0].email).then(() => toast({ title: 'E-mail copié' }))} className="underline text-blue-700">{Array.isArray(p.contacts) && p.contacts[0]?.email}</button></div>
             {p.notes && <div className="mt-1 text-sm text-slate-600 line-clamp-2">{p.notes}</div>}
             <div className="mt-3 flex flex-wrap gap-2">
               <Link to={`/prospects/${p.id}`} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Ouvrir</Link>
-              {p.contacts[0]?.email && <a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">E-mail</a>}
+              {Array.isArray(p.contacts) && p.contacts[0]?.email && <a href={`mailto:${p.contacts[0].email}?subject=${encodeURIComponent('Prise de contact FPSG')}`} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">E-mail</a>}
               <button onClick={() => copy("Résumé", summaryText(p))} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm">Copier résumé</button>
             </div>
           </div>
