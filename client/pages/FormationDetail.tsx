@@ -49,7 +49,7 @@ export default function FormationDetail() {
   const teaserCopy = async () => {
     if (!formation?.teaser_url) return;
     await navigator.clipboard.writeText(formation.teaser_url);
-    toast({ title: "Lien teaser copié ✅" });
+    toast({ title: "Lien teaser copié" });
   };
 
   const doPrint = () => {
@@ -92,7 +92,7 @@ export default function FormationDetail() {
           <Tooltip><TooltipTrigger asChild><a href={pdf || undefined} target="_blank" rel="noreferrer" className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${pdf ? "hover:bg-gray-50" : "opacity-50 pointer-events-none"}`}><ExternalLink className="h-4 w-4"/> Voir plaquette</a></TooltipTrigger><TooltipContent>{pdf ? "Ouvrir PDF" : "Non disponible"}</TooltipContent></Tooltip>
           <Tooltip><TooltipTrigger asChild><button onClick={teaserCopy} disabled={!teaser} className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${teaser ? "hover:bg-gray-50" : "opacity-50"}`}><LinkIcon className="h-4 w-4"/> Copier teaser</button></TooltipTrigger><TooltipContent>{teaser ? "Copier lien" : "Non disponible"}</TooltipContent></Tooltip>
           <button onClick={() => setOpenCompose(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50"><Mail className="h-4 w-4"/> Envoyer proposition e-mail</button>
-          <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">🧾 Générer proposition PDF</button>
+          <button onClick={() => setOpenPDF(true)} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50">Générer proposition PDF</button>
           <Tooltip><TooltipTrigger asChild><button onClick={doPrint} className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"><Printer className="h-4 w-4"/> Exporter en PDF</button></TooltipTrigger><TooltipContent>Export PDF</TooltipContent></Tooltip>
         </div>
       </div>
