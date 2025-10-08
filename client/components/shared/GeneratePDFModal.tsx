@@ -117,7 +117,7 @@ export default function GeneratePDFModal({ open, onClose, context, initialFormat
         sales,
         costOverride: (!formation.price_estimate || !String(formation.price_estimate).trim()) ? (costInput || undefined) : undefined,
       });
-      toast({ title: '✅ Proposition PDF générée' });
+      toast({ title: 'Proposition PDF générée' });
       onClose();
     } catch (e:any) {
       toast({ title: e?.message || 'Erreur lors de la génération PDF' });
@@ -128,7 +128,7 @@ export default function GeneratePDFModal({ open, onClose, context, initialFormat
     <Dialog open={open} onOpenChange={(v)=>!v && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>🧾 Générer proposition PDF</DialogTitle>
+          <DialogTitle>Générer proposition PDF</DialogTitle>
           <DialogDescription>Combine la formation, le prospect et un template d'accroche pour créer une proposition PDF mise en page.</DialogDescription>
         </DialogHeader>
 
@@ -139,7 +139,7 @@ export default function GeneratePDFModal({ open, onClose, context, initialFormat
               <Input value={qProspect} onChange={(e)=>setQProspect(e.target.value)} placeholder="Rechercher prospect…" className="mt-1"/>
               <select className="mt-2 w-full rounded-md border px-3 py-2 text-sm" value={selectedProspect ? selectedProspect.company_name : ''} onChange={(e)=>setSelectedProspect(filteredProspects.find(p=>p.company_name===e.target.value) || null)}>
                 <option value="">— Choisir —</option>
-                {filteredProspects.map((p,i)=> <option key={i} value={p.company_name}>{p.company_name} ��� {p.sector||'—'} / {p.region||'—'}</option>)}
+                {filteredProspects.map((p,i)=> <option key={i} value={p.company_name}>{p.company_name} — {p.sector||'—'} / {p.region||'—'}</option>)}
               </select>
             </div>
           ) : (
