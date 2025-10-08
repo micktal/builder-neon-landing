@@ -52,6 +52,7 @@ export default function Prospects() {
   const [view, setView] = useState<'list'|'map'>('list');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [csvText, setCsvText] = useState("");
 
   // Load
   useEffect(() => {
@@ -188,9 +189,33 @@ export default function Prospects() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Importer CSV</DialogTitle>
-                <DialogDescription>À venir : import CSV pour créer/mettre à jour des prospects.</DialogDescription>
+                <DialogTitle>Importer CSV (séparateur ;)</DialogTitle>
+                <DialogDescription>En-têtes requis: company_name;sector;region;size_band;preferred_format;priority_score;contacts;stage;notes;createdAt</DialogDescription>
               </DialogHeader>
+              <div className="space-y-3">
+                <textarea
+                  value={csvText}
+                  onChange={(e)=>setCsvText(e.target.value)}
+                  placeholder="Collez votre CSV ici"
+                  className="w-full h-48 rounded-md border border-gray-200 bg-white p-2 text-sm font-mono"
+                />
+                <div className="text-xs text-slate-600">Le champ contacts accepte un tableau JSON.</div>
+                <div className="flex justify-end gap-2">
+                  <button onClick={async()=>{
+                    try {
+                      if (!csvText.trim()) { toast({ title: "Collez un CSV valide" }); return; }
+                      const resp = await fetch('/api/import/prospects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csv: csvText }) });
+                      const json = await resp.json();
+                      if (!resp.ok) throw new Error(json?.error || 'Import failed');
+                      toast({ title: `${json.count} prospect(s) importé(s)` });
+                      const { items } = await fetchBuilderContent<Prospect>('prospects', { limit: 200, cacheBust: true });
+                      setData(items);
+                    } catch (e: any) {
+                      toast({ title: e?.message || "Échec de l'import" });
+                    }
+                  }} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">Importer</button>
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
           <Tooltip>
