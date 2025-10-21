@@ -125,9 +125,21 @@ export default function ProspectNew() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const json = await resp.json();
+      const text = await resp.text();
+      const json = (() => {
+        try {
+          return text ? JSON.parse(text) : null;
+        } catch {
+          return null;
+        }
+      })();
       if (!resp.ok || json?.error)
-        throw new Error(json?.error || "Erreur serveur");
+        throw new Error(
+          json?.error ||
+            (text && text.startsWith("<")
+              ? "Réponse invalide de l’API Builder"
+              : "Erreur serveur"),
+        );
       toast({ title: "Prospect ajouté avec succès" });
       // navigate vers la liste
       // navigate("/prospects");
