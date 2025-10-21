@@ -112,6 +112,32 @@ export default function Dashboard() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const [pRes, fRes, tRes] = await Promise.all([
+          fetch("/api/prospects?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
+          fetch("/api/formations?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
+          fetch("/api/templates?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
+        ]);
+        const mappedProspects: ProspectRecord[] = Array.isArray(pRes?.items)
+          ? pRes.items.map((item: any) => ({ id: item.id, ...(item.data || {}) }))
+          : [];
+        const mappedFormations = Array.isArray(fRes?.items)
+          ? fRes.items.map((item: any) => ({ id: item.id, ...(item.data || {}) }))
+          : [];
+        const mappedTemplates = Array.isArray(tRes?.items)
+          ? tRes.items.map((item: any) => ({ id: item.id, ...(item.data || {}) }))
+          : [];
+        setProspects(mappedProspects);
+        setFormations(mappedFormations);
+        setTemplates(mappedTemplates);
+      } catch (error) {
+        console.error("Failed to load contextual data", error);
+      }
+    })();
+  }, []);
+
   const copy = async (label: string, text: string) => {
     try {
       await navigator.clipboard.writeText(text);
