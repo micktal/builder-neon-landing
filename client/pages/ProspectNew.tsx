@@ -90,7 +90,7 @@ export default function ProspectNew() {
 
   const copySummary = async () => {
     const c0 = contacts[0] || { contact_name: "", role: "", email: "" };
-    const text = `Entreprise : ${company_name}\nSecteur : ${sector}\nRégion : ${region}\nContact : ${c0.contact_name} (${c0.role} – ${c0.email})\nBesoins : ${notes}\nScore : ${priority_score}/100`;
+    const text = `Entreprise : ${company_name}\nSecteur : ${sector}\nRégion : ${region}\nContact : ${c0.contact_name} (${c0.role} – ${c0.email})\nBesoins : ${notes}`;
     try {
       await navigator.clipboard.writeText(text);
       toast({ title: "Résumé copié" });
