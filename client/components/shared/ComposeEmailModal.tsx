@@ -8,8 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 
 type Prospect = { company_name: string; sector?: string; region?: string; contacts?: { name?: string; email?: string }[] };
 type Template = { template_name: string; use_case?: string; domain_filter?: string[]; sector_filter?: string[]; format_filter?: string[]; audience_filter?: string[]; email_subject?: string; email_body?: string };
+type ComposePreset = { templateName?: string; subject?: string; body?: string };
 
-export default function ComposeEmailModal({ open, onClose, context, defaultUseCase }: { open: boolean; onClose: () => void; context?: { formation?: { title?: string; duration?: string; format?: string | string[]; domain?: string }, prospect?: Prospect }; defaultUseCase?: string; }) {
+export default function ComposeEmailModal({ open, onClose, context, defaultUseCase, preset }: { open: boolean; onClose: () => void; context?: { formation?: { title?: string; duration?: string; format?: string | string[]; domain?: string }, prospect?: Prospect }; defaultUseCase?: string; preset?: ComposePreset; }) {
   const { toast } = useToast();
   const [openCompose, setOpenCompose] = useState<boolean>(open);
   useEffect(() => setOpenCompose(open), [open]);
