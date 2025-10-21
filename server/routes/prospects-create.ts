@@ -52,17 +52,17 @@ export const createProspect: RequestHandler = async (req, res) => {
       body.contacts = [];
     } else {
       body.contacts = body.contacts
-      .map((contact: any) => ({
-        name: contact?.name || contact?.contact_name || "",
-        role: contact?.role || "",
-        email: contact?.email || "",
-        phone: contact?.phone || "",
-        linkedin: contact?.linkedin || "",
-      }))
-      .filter((c: any) =>
-        Object.values(c).some((value) => value && String(value).trim().length > 0),
-      );
-  }
+        .map((contact: any) => ({
+          name: contact?.name || contact?.contact_name || "",
+          role: contact?.role || "",
+          email: contact?.email || "",
+          phone: contact?.phone || "",
+          linkedin: contact?.linkedin || "",
+        }))
+        .filter((c: any) =>
+          Object.values(c).some((value) => value && String(value).trim().length > 0),
+        );
+    }
 
   let normalized: any = {
     ...body,
