@@ -16,34 +16,53 @@ export const createProspect: RequestHandler = async (req, res) => {
       body.contacts = [];
     } else {
       body.contacts = body.contacts
-        .map((contact: any) => ({
-          name: contact?.name || contact?.contact_name || "",
-          role: contact?.role || "",
-          email: contact?.email || "",
-          phone: contact?.phone || "",
-          linkedin: contact?.linkedin || "",
-        }))
-        .filter((c: any) => Object.values(c).some((value) => value && String(value).trim().length > 0));
-    }
+      .map((contact: any) => ({
+        name: contact?.name || contact?.contact_name || "",
+        role: contact?.role || "",
+        email: contact?.email || "",
+        phone: contact?.phone || "",
+        linkedin: contact?.linkedin || "",
+      }))
+      .filter((c: any) =>
+        Object.values(c).some((value) => value && String(value).trim().length > 0),
+      );
+  }
 
-    const resp = await fetch("https://builder.io/api/v3/content/prospects", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${BUILDER_PRIVATE_KEY}`,
-      },
-      body: JSON.stringify({
-        data: body,
-        published: "published",
-      }),
-    });
+  const builderPayload = {
+    name: body.company_name,
+    data: body,
+    published: "published",
+  };
 
-    if (!resp.ok) {
-      const txt = await resp.text();
-      return res.status(500).json({ error: "Builder error", detail: txt });
-    }
-    const json = await resp.json();
-    return res.json({ ok: true, id: json?.id ?? json?._id ?? null });
+  const resp = await fetch("https://builder.io/api/v3/content/prospects", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${BUILDER_PRIVATE_KEY}`,
+    },
+    body: JSON.stringify(builderPayload),
+  });
+
+  const raw = await resp.text();
+  let parsed: any = null;
+  try {
+    parsed = raw ? JSON.parse(raw) : null;
+  } catch {
+    parsed = null;
+  }
+
+  if (!resp.ok || parsed?.error || parsed?.message) {
+    const message =
+      parsed?.error ||
+      parsed?.message ||
+      (raw && raw.startsWith("{"))
+        ? raw
+        : raw || "Builder error";
+    return res.status(resp.status || 500).json({ error: message });
+  }
+
+  return res.json({ ok: true, id: parsed?.id ?? parsed?._id ?? null });
   } catch (e: any) {
     return res.status(500).json({ error: e?.message || "Unknown error" });
   }
