@@ -69,9 +69,6 @@ export default function ProspectNew() {
   const [budget_hint, setBudgetHint] = useState("");
   const [preferred_format, setPreferredFormat] = useState<string | "">("");
 
-  // Scoring
-  const [priority_score, setPriorityScore] = useState<number>(50);
-
   // Prefill from query
   useEffect(() => {
     const qs = q.get("sector");
