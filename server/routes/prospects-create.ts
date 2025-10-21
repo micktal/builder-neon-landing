@@ -1,4 +1,36 @@
 import type { RequestHandler } from "express";
+import { promises as fs } from "fs";
+import path from "path";
+import { randomUUID } from "crypto";
+
+const LOCAL_PROSPECTS_FILE = path.join(
+  process.cwd(),
+  "server",
+  "data",
+  "prospects-local.json",
+);
+
+async function saveProspectLocally(data: any) {
+  await fs.mkdir(path.dirname(LOCAL_PROSPECTS_FILE), { recursive: true });
+  let existing: any[] = [];
+  try {
+    const raw = await fs.readFile(LOCAL_PROSPECTS_FILE, "utf8");
+    existing = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(existing)) existing = [];
+  } catch {
+    existing = [];
+  }
+  const id = randomUUID();
+  const record = {
+    id,
+    data,
+    createdAt: new Date().toISOString(),
+    source: "local",
+  };
+  existing.push(record);
+  await fs.writeFile(LOCAL_PROSPECTS_FILE, JSON.stringify(existing, null, 2), "utf8");
+  return record;
+}
 
 export const createProspect: RequestHandler = async (req, res) => {
   try {
