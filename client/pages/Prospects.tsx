@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
   Tooltip,
@@ -35,7 +35,6 @@ import {
   List as ListIcon,
 } from "lucide-react";
 
-import { useEffect } from "react";
 import ProspectsMap from "@/components/shared/ProspectsMap";
 
 interface Contact {
