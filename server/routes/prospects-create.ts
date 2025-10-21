@@ -21,9 +21,10 @@ async function saveProspectLocally(data: any) {
     existing = [];
   }
   const id = randomUUID();
+  const payload = { ...(data || {}), _source: "local" };
   const record = {
     id,
-    data,
+    data: payload,
     createdAt: new Date().toISOString(),
     source: "local",
   };
@@ -71,6 +72,7 @@ export const createProspect: RequestHandler = async (req, res) => {
     stage: body.stage || "Nouveau",
     createdAt: body.createdAt || new Date().toISOString(),
   };
+  normalized._source = "builder";
 
   const builderPayload = {
     name: body.company_name,
@@ -102,6 +104,7 @@ export const createProspect: RequestHandler = async (req, res) => {
       message = raw && !raw.startsWith("{") ? raw : "Builder error";
     }
     try {
+      normalized = { ...normalized, _source: "local" };
       const fallback = await saveProspectLocally(normalized);
       return res.status(201).json({
         ok: true,
@@ -124,6 +127,7 @@ export const createProspect: RequestHandler = async (req, res) => {
   } catch (e: any) {
     if (normalized) {
       try {
+        normalized = { ...normalized, _source: "local" };
         const fallback = await saveProspectLocally(normalized);
         return res.status(201).json({
           ok: true,
