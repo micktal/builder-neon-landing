@@ -161,8 +161,6 @@ export default function Prospects() {
   const [fSector, setFSector] = useState<string | "">("");
   const [fRegion, setFRegion] = useState<string | "">("");
   const [fSize, setFSize] = useState<string | "">("");
-  const [scoreMin, setScoreMin] = useState(0);
-  const [scoreMax, setScoreMax] = useState(100);
 
   // Selection & pagination
   const [selected, setSelected] = useState<Record<string, boolean>>({});
