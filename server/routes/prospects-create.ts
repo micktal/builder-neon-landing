@@ -28,9 +28,18 @@ export const createProspect: RequestHandler = async (req, res) => {
       );
   }
 
+  const normalized = {
+    ...body,
+    priority_score: Number.isFinite(Number(body.priority_score))
+      ? Number(body.priority_score)
+      : 50,
+    stage: body.stage || "Nouveau",
+    createdAt: body.createdAt || new Date().toISOString(),
+  };
+
   const builderPayload = {
     name: body.company_name,
-    data: body,
+    data: normalized,
     published: "published",
   };
 
