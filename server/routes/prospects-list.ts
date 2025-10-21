@@ -58,7 +58,11 @@ export const listProspects: RequestHandler = async (req, res) => {
               ? json
               : [];
           remoteItems = results
-            .map((r: any) => ({ id: r?.id || r?._id, data: r?.data ?? r, source: "builder" }))
+            .map((r: any) => ({
+              id: r?.id || r?._id,
+              data: { ...(r?.data ?? r), _source: "builder" },
+              source: "builder",
+            }))
             .filter((x: any) => x.id);
         }
       } catch (err: any) {
