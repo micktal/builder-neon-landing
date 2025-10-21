@@ -404,46 +404,15 @@ export default function Dashboard() {
             Templates mis en avant
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <TemplateCard
-              title="Prise de contact retail"
-              useCase="Prospection à froid"
-              onCopyEmail={() =>
-                copy("E-mail", `Subject: ${emailSubject}\n\n${emailBody}`)
-              }
-              onCopySpeech={() => copy("Speech", speechText)}
-            />
-            <TemplateCard
-              title="Relance rendez-vous"
-              useCase="Relance"
-              onCopyEmail={() =>
-                copy(
-                  "E-mail",
-                  `Subject: Relance — {{formation_title}}\n\nBonjour {{contact_name}},\nSuite à mon précédent message, je me permets une relance rapide...\n\nCordialement,\n{{your_name}}`,
-                )
-              }
-              onCopySpeech={() =>
-                copy(
-                  "Speech",
-                  "Bonjour {{contact_name}}, je me permets une relance rapide concernant notre échange...",
-                )
-              }
-            />
-            <TemplateCard
-              title="Suite à incident"
-              useCase="Réactivité"
-              onCopyEmail={() =>
-                copy(
-                  "E-mail",
-                  `Subject: Suite à l'incident — accompagnement FPSG\n\nBonjour {{contact_name}}, nous pouvons former vos équipes sur {{formation_title}}...`,
-                )
-              }
-              onCopySpeech={() =>
-                copy(
-                  "Speech",
-                  "Bonjour {{contact_name}}, suite à l'incident récent, nous proposons un module dédié...",
-                )
-              }
-            />
+            {templateCards.map((card, index) => (
+              <TemplateCard
+                key={`${card.title}-${index}`}
+                title={card.title}
+                useCase={card.useCase}
+                onCopyEmail={() => copy("E-mail", card.email)}
+                onCopySpeech={card.speech ? () => copy("Speech", card.speech) : undefined}
+              />
+            ))}
           </div>
         </div>
       </section>
