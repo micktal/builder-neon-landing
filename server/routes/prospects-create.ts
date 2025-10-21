@@ -123,7 +123,7 @@ export const createProspect: RequestHandler = async (req, res) => {
 
   return res
     .status(201)
-    .json({ ok: true, id: parsed?.id ?? parsed?._id ?? null, data: normalized });
+    .json({ ok: true, id: parsed?.id ?? parsed?._id ?? null, data: normalized, source: "builder" });
   } catch (e: any) {
     if (normalized) {
       try {
