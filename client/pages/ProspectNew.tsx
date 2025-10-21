@@ -157,8 +157,7 @@ export default function ProspectNew() {
         throw new Error(message);
       }
       toast({ title: "Prospect ajouté avec succès" });
-      // navigate vers la liste
-      // navigate("/prospects");
+      navigate("/prospects");
     } catch (e: any) {
       const rawMessage = e?.message || "Impossible d'enregistrer";
       const description = rawMessage.includes("Unexpected token")
