@@ -84,10 +84,6 @@ export default function ProspectNew() {
     return company_name.trim().length > 0;
   }, [company_name]);
 
-  useEffect(() => {
-    setPriorityScore(0);
-  }, []);
-
   const copySummary = async () => {
     const c0 = contacts[0] || { contact_name: "", role: "", email: "" };
     const text = `Entreprise : ${company_name}\nSecteur : ${sector}\nRégion : ${region}\nContact : ${c0.contact_name} (${c0.role} – ${c0.email})\nBesoins : ${notes}`;
@@ -122,7 +118,6 @@ export default function ProspectNew() {
         training_history,
         budget_hint,
         preferred_format,
-        priority_score,
         notes,
       };
       const resp = await fetch("/api/prospects", {
