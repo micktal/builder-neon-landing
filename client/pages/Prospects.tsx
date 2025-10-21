@@ -150,6 +150,8 @@ const mergeProspectLists = (
 
 export default function Prospects() {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Data
   const [data, setData] = useState<Prospect[]>(EMPTY);
