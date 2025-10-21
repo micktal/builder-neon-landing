@@ -172,6 +172,16 @@ export default function Prospects() {
   const [csvText, setCsvText] = useState("");
   const [importResult, setImportResult] = useState<any | null>(null);
 
+  // Handle redirect state from creation
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.data) {
+      const candidate = { id: state.id, ...(state.data || {}) } as ProspectLike;
+      setData((prev) => mergeProspectLists(prev, [candidate]));
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
   // Load
   useEffect(() => {
     (async () => {
