@@ -53,13 +53,11 @@ export const createProspect: RequestHandler = async (req, res) => {
   }
 
   if (!resp.ok || parsed?.error || parsed?.message) {
-    const message =
-      parsed?.error ||
-      parsed?.message ||
-      (raw && !raw.startsWith("{"))
-        ? raw || "Builder error"
-        : "Builder error";
-    return res.status(resp.status || 500).json({ error: message });
+    let message = parsed?.error || parsed?.message || "";
+    if (!message) {
+      message = raw && !raw.startsWith("{") ? raw : "Builder error";
+    }
+    return res.status(resp.status || 500).json({ error: message, detail: parsed || raw });
   }
 
   return res.json({ ok: true, id: parsed?.id ?? parsed?._id ?? null });
