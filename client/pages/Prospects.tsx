@@ -119,7 +119,7 @@ export default function Prospects() {
       if (Array.isArray(json?.warnings) && json.warnings.length) {
         toast({
           title: "Avertissement",
-          description: json.warnings.join(" \u2022 "),
+          description: json.warnings.join(" • "),
         });
       }
       const items = Array.isArray(json?.items) ? json.items : [];
