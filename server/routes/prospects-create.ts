@@ -101,7 +101,21 @@ export const createProspect: RequestHandler = async (req, res) => {
     if (!message) {
       message = raw && !raw.startsWith("{") ? raw : "Builder error";
     }
-    return res.status(resp.status || 500).json({ error: message, detail: parsed || raw });
+    try {
+      const fallback = await saveProspectLocally(normalized);
+      return res.status(201).json({
+        ok: true,
+        id: fallback.id,
+        data: normalized,
+        source: fallback.source,
+        warning: message,
+        detail: parsed || raw,
+      });
+    } catch {
+      return res
+        .status(resp.status || 500)
+        .json({ error: message, detail: parsed || raw });
+    }
   }
 
   return res
