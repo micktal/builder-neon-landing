@@ -266,6 +266,35 @@ export default function ProspectDetail() {
         </aside>
       </div>
 
+      <ComposeEmailModal
+        open={openCompose}
+        onClose={() => {
+          setOpenCompose(false);
+          setSelectedRecommendation(null);
+        }}
+        context={{
+          prospect,
+          formation: selectedRecommendation?.formation
+            ? {
+                title: selectedRecommendation.formation.title,
+                duration: selectedRecommendation.formation.duration,
+                format: selectedRecommendation.formation.format,
+                domain: selectedRecommendation.formation.domain,
+              }
+            : undefined,
+        }}
+        defaultUseCase={selectedRecommendation?.template.use_case}
+        preset={
+          selectedRecommendation
+            ? {
+                templateName: selectedRecommendation.template.template_name,
+                subject: selectedRecommendation.subjectPreview,
+                body: selectedRecommendation.emailBodyPreview,
+              }
+            : undefined
+        }
+      />
+
       <GeneratePDFModal
         open={openPDF}
         onClose={() => setOpenPDF(false)}
