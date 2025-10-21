@@ -508,7 +508,7 @@ function TemplateCard({
   title: string;
   useCase: string;
   onCopyEmail: () => void;
-  onCopySpeech: () => void;
+  onCopySpeech?: () => void;
 }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
