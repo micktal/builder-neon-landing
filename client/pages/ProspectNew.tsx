@@ -169,7 +169,7 @@ export default function ProspectNew() {
           : "Prospect ajouté avec succès",
         description: storedLocally ? data?.warning || undefined : undefined,
       });
-      navigate("/prospects", { state: data });
+      navigate("/prospects", { state: data, replace: true });
     } catch (e: any) {
       const rawMessage = e?.message || "Impossible d'enregistrer";
       const description = rawMessage.includes("Unexpected token")
