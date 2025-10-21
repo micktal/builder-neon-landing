@@ -44,9 +44,20 @@ interface Template {
   domain_filter?: string[];
   sector_filter?: string[];
   format_filter?: string[];
+  audience_filter?: string[];
   email_subject?: string;
   email_body?: string;
   speech_text?: string;
+}
+
+interface Formation {
+  title?: string;
+  domain?: string;
+  format?: string | string[];
+  duration?: string;
+  sectors?: string[];
+  audiences?: string[];
+  keywords?: string[];
 }
 
 export default function ProspectDetail() {
