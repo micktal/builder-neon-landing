@@ -31,6 +31,7 @@ import ContextualScriptList, {
 } from "@/components/dashboard/ContextualScriptList";
 import { computeScriptRecommendations } from "@/lib/recommendations";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 const TRAINING_STORAGE_KEY = "fpsg_internal_training_progress";
 const TRAINING_MODULE_COUNT = 5;
@@ -41,7 +42,7 @@ const FALLBACK_TEMPLATE_CARDS = [
     email:
       'Subject: Formation "{{formation_title}}" — prise de contact\n\nBonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation "{{formation_title}}" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}',
     speech:
-      "Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurité, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?",
+      "Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurit��, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?",
   },
   {
     title: "Relance rendez-vous",
