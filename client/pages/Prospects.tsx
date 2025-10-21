@@ -651,17 +651,22 @@ export default function Prospects() {
                     />
                   </td>
                   <td className="p-3">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        to={`/prospects/${p.id}`}
-                        className="text-blue-700 hover:underline"
-                      >
-                        {p.company_name}
-                      </Link>
-                      {p._source === "local" && (
-                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
-                          Hors ligne
-                        </span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/prospects/${p.id}`}
+                          className="text-blue-700 hover:underline"
+                        >
+                          {p.company_name}
+                        </Link>
+                        {p._source === "local" && (
+                          <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+                            Hors ligne
+                          </span>
+                        )}
+                      </div>
+                      {p.stage && (
+                        <span className="text-xs text-slate-500">{p.stage}</span>
                       )}
                     </div>
                   </td>
