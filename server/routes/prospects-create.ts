@@ -63,7 +63,7 @@ export const createProspect: RequestHandler = async (req, res) => {
       );
   }
 
-  const normalized = {
+  let normalized: any = {
     ...body,
     priority_score: Number.isFinite(Number(body.priority_score))
       ? Number(body.priority_score)
