@@ -101,6 +101,16 @@ export default function ProspectNew() {
       return;
     }
     try {
+      const contactsPayload = contacts
+        .map((c) => ({
+          name: c.contact_name?.trim() || "",
+          role: c.role?.trim() || "",
+          email: c.email?.trim() || "",
+          phone: c.phone?.trim() || "",
+          linkedin: c.linkedin?.trim() || "",
+        }))
+        .filter((c) => Object.values(c).some((value) => value));
+
       const payload = {
         company_name,
         entity_type,
@@ -108,13 +118,7 @@ export default function ProspectNew() {
         size_band,
         region,
         sites_count: sites_count === "" ? null : sites_count,
-        contacts: contacts.map((c) => ({
-          name: c.contact_name,
-          role: c.role,
-          email: c.email,
-          phone: c.phone,
-          linkedin: c.linkedin,
-        })),
+        contacts: contactsPayload,
         training_history,
         budget_hint,
         preferred_format,
@@ -144,9 +148,13 @@ export default function ProspectNew() {
       // navigate vers la liste
       // navigate("/prospects");
     } catch (e: any) {
+      const rawMessage = e?.message || "Impossible d'enregistrer";
+      const description = rawMessage.includes("Unexpected token")
+        ? "Réponse invalide de l’API Builder. Vérifiez les champs minimaux ou réessayez."
+        : rawMessage;
       toast({
         title: "Erreur",
-        description: e?.message || "Impossible d'enregistrer",
+        description,
       });
     }
   };
