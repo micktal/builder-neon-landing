@@ -229,7 +229,7 @@ export default function ProspectNew() {
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium">Secteur *</label>
+            <label className="text-sm font-medium">Secteur</label>
             <select
               value={sector}
               onChange={(e) => setSector(e.target.value)}
@@ -302,7 +302,7 @@ export default function ProspectNew() {
         {contacts.map((c, idx) => (
           <div key={idx} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="text-sm font-medium">Nom & prénom *</label>
+              <label className="text-sm font-medium">Nom & prénom</label>
               <input
                 value={c.contact_name}
                 onChange={(e) =>
@@ -328,7 +328,7 @@ export default function ProspectNew() {
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">E-mail *</label>
+              <label className="text-sm font-medium">E-mail</label>
               <input
                 type="email"
                 value={c.email}
