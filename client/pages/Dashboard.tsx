@@ -205,6 +205,19 @@ export default function Dashboard() {
     contextualScripts,
   ]);
 
+  const templateCards = useMemo(
+    () =>
+      templateHighlights.length
+        ? templateHighlights.map((item) => ({
+            title: item.recommendation.template.template_name,
+            useCase: item.recommendation.template.use_case || "Prospection",
+            email: `Subject: ${item.recommendation.subjectPreview}\n\n${item.recommendation.emailBodyPreview}`,
+            speech: item.recommendation.speechPreview || "",
+          }))
+        : [...FALLBACK_TEMPLATE_CARDS],
+    [templateHighlights],
+  );
+
   const handlePersonalize = (item: ContextualScriptItem) => {
     setSelectedScript(item);
     setComposeOpen(true);
