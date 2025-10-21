@@ -71,6 +71,24 @@ export const createProspect: RequestHandler = async (req, res) => {
   };
   normalized._source = "builder";
 
+  if (!BUILDER_PRIVATE_KEY) {
+    try {
+      normalized = { ...normalized, _source: "local" };
+      const fallback = await saveProspectLocally(normalized);
+      return res.status(201).json({
+        ok: true,
+        id: fallback.id,
+        data: normalized,
+        source: fallback.source,
+        warning: "BUILDER_PRIVATE_KEY manquante",
+      });
+    } catch (err: any) {
+      return res
+        .status(500)
+        .json({ error: err?.message || "Impossible d’enregistrer localement" });
+    }
+  }
+
   const builderPayload = {
     name: body.company_name,
     data: normalized,
