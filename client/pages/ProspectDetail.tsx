@@ -65,7 +65,11 @@ export default function ProspectDetail() {
   const { toast } = useToast();
   const [prospect, setProspect] = useState<Prospect | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [formations, setFormations] = useState<Formation[]>([]);
   const [openPDF, setOpenPDF] = useState(false);
+  const [openCompose, setOpenCompose] = useState(false);
+  const [selectedRecommendation, setSelectedRecommendation] =
+    useState<ScriptRecommendation | null>(null);
 
   useEffect(() => {
     if (!id) return;
