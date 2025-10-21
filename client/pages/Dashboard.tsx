@@ -527,12 +527,14 @@ function TemplateCard({
         >
           <Mail className="h-4 w-4" /> Copier e-mail
         </button>
-        <button
-          onClick={onCopySpeech}
-          className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <MessageSquare className="h-4 w-4" /> Copier speech
-        </button>
+        {onCopySpeech && (
+          <button
+            onClick={onCopySpeech}
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <MessageSquare className="h-4 w-4" /> Copier speech
+          </button>
+        )}
       </div>
     </div>
   );
