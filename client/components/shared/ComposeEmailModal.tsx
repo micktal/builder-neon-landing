@@ -46,6 +46,49 @@ export default function ComposeEmailModal({ open, onClose, context, defaultUseCa
     })();
   }, []);
 
+  useEffect(() => {
+    if (context?.prospect) {
+      setSelectedProspect(context.prospect);
+      setSelectedContact(context.prospect.contacts?.[0] || null);
+    }
+  }, [context?.prospect]);
+
+  useEffect(() => {
+    if (!open) return;
+    setHasAppliedPreset(false);
+    if (preset?.templateName) {
+      setPendingTemplateName(preset.templateName);
+    } else {
+      setPendingTemplateName(null);
+    }
+  }, [open, preset?.templateName]);
+
+  useEffect(() => {
+    if (!pendingTemplateName || !templates.length) return;
+    const found = templates.find((t) => t.template_name === pendingTemplateName);
+    if (found) {
+      setSelectedTemplate(found);
+    }
+    setPendingTemplateName(null);
+  }, [pendingTemplateName, templates]);
+
+  useEffect(() => {
+    if (!open || !preset || hasAppliedPreset) return;
+    const matchesTemplate =
+      !preset.templateName || selectedTemplate?.template_name === preset.templateName;
+    if (!matchesTemplate) return;
+    if (preset.subject) setSubject(preset.subject);
+    if (preset.body) setBody(preset.body);
+    setHasAppliedPreset(true);
+  }, [
+    open,
+    preset?.subject,
+    preset?.body,
+    preset?.templateName,
+    hasAppliedPreset,
+    selectedTemplate?.template_name,
+  ]);
+
   const filteredProspects = useMemo(() => {
     const s = searchProspect.toLowerCase();
     const list = prospects || [];
