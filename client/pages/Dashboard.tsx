@@ -223,7 +223,7 @@ export default function Dashboard() {
     setComposeOpen(true);
   };
 
-  const emailBody = `Bonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation \"{{formation_title}}\" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}`;
+  const __legacyEmailBody = `Bonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation \"{{formation_title}}\" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}`;
   const speechText = `Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurité, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?`;
 
   return (
