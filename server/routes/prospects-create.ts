@@ -56,9 +56,9 @@ export const createProspect: RequestHandler = async (req, res) => {
     const message =
       parsed?.error ||
       parsed?.message ||
-      (raw && raw.startsWith("{"))
-        ? raw
-        : raw || "Builder error";
+      (raw && !raw.startsWith("{"))
+        ? raw || "Builder error"
+        : "Builder error";
     return res.status(resp.status || 500).json({ error: message });
   }
 
