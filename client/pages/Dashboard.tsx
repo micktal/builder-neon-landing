@@ -40,6 +40,18 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const [prospects, setProspects] = useState<ProspectRecord[]>([]);
+  const [formations, setFormations] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [selectedScript, setSelectedScript] =
+    useState<ContextualScriptItem | null>(null);
+  const [trainingStats, setTrainingStats] = useState({
+    done: 0,
+    total: TRAINING_MODULE_COUNT,
+    pct: 0,
+  });
+
   // Counters from Builder CMS
   const [counts, setCounts] = useState<{
     prospects?: number;
