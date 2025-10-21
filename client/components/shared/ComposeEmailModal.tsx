@@ -31,6 +31,7 @@ export default function ComposeEmailModal({ open, onClose, context, defaultUseCa
   const [yourName, setYourName] = useState<string>(() => localStorage.getItem("fpsg_user_name") || "");
   const [yourEmail, setYourEmail] = useState<string>(() => localStorage.getItem("fpsg_user_email") || "");
   const [lockBody, setLockBody] = useState<boolean>(false);
+  const [pendingTemplateName, setPendingTemplateName] = useState<string | null>(null);
 
   useEffect(() => { localStorage.setItem("fpsg_user_name", yourName || ""); }, [yourName]);
   useEffect(() => { localStorage.setItem("fpsg_user_email", yourEmail || ""); }, [yourEmail]);
