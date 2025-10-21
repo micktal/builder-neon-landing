@@ -162,7 +162,13 @@ export default function ProspectNew() {
         throw new Error(detail ? `${baseMessage} — ${detail}` : baseMessage);
       }
       const data = json ?? (await resp.json().catch(() => null));
-      toast({ title: "Prospect ajouté avec succès" });
+      const storedLocally = data?.source === "local";
+      toast({
+        title: storedLocally
+          ? "Prospect enregistré hors connexion"
+          : "Prospect ajouté avec succès",
+        description: storedLocally ? data?.warning || undefined : undefined,
+      });
       navigate("/prospects", { state: data });
     } catch (e: any) {
       const rawMessage = e?.message || "Impossible d'enregistrer";
