@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -19,6 +18,12 @@ import {
 } from "recharts";
 import { computeScriptRecommendations } from "@/lib/recommendations";
 
+interface ProspectContact {
+  name?: string;
+  email?: string;
+  role?: string;
+}
+
 type Prospect = {
   id?: string;
   company_name: string;
@@ -27,8 +32,9 @@ type Prospect = {
   size_band?: string;
   priority_score?: number;
   createdAt?: string;
-  contacts?: { name?: string; email?: string; role?: string }[];
+  contacts?: ProspectContact[];
 };
+
 type Formation = { id?: string; data?: any } & any;
 type Template = { id?: string; data?: any } & any;
 
@@ -117,8 +123,8 @@ export default function Analytics() {
     return d;
   }, [filters.period]);
 
-  const applyProspectFilters = (list: Prospect[]) =>
-    list.filter((p) => {
+  const filteredProspects = useMemo(() => {
+    return prospects.filter((p) => {
       const created = p.createdAt ? new Date(p.createdAt) : null;
       if (dateFrom && created && created < dateFrom) return false;
       if (filters.sector.length && (!p.sector || !filters.sector.includes(p.sector)))
@@ -127,9 +133,10 @@ export default function Analytics() {
         return false;
       return true;
     });
+  }, [prospects, filters, dateFrom]);
 
-  const applyFormationFilters = (list: any[]) =>
-    list.filter((f) => {
+  const filteredFormations = useMemo(() => {
+    return formations.filter((f) => {
       if (filters.domain.length && (!f.domain || !filters.domain.includes(f.domain)))
         return false;
       if (filters.format.length) {
@@ -138,9 +145,10 @@ export default function Analytics() {
       }
       return true;
     });
+  }, [formations, filters]);
 
-  const applyTemplateFilters = (list: any[]) =>
-    list.filter((t) => {
+  const filteredTemplates = useMemo(() => {
+    return templates.filter((t) => {
       if (filters.domain.length) {
         const ds = t.domain_filter || [];
         if (!ds.some((x: string) => filters.domain.includes(x))) return false;
@@ -151,19 +159,7 @@ export default function Analytics() {
       }
       return true;
     });
-
-  const filteredProspects = useMemo(
-    () => applyProspectFilters(prospects),
-    [prospects, filters, dateFrom],
-  );
-  const filteredFormations = useMemo(
-    () => applyFormationFilters(formations),
-    [formations, filters],
-  );
-  const filteredTemplates = useMemo(
-    () => applyTemplateFilters(templates),
-    [templates, filters],
-  );
+  }, [templates, filters]);
 
   const scriptMatches = useMemo(
     () =>
@@ -203,10 +199,7 @@ export default function Analytics() {
       scriptMatches
         .filter((m) => m.recs.length)
         .slice(0, 10)
-        .map((m) => ({
-          prospect: m.prospect,
-          recommendation: m.recs[0],
-        })),
+        .map((m) => ({ prospect: m.prospect, recommendation: m.recs[0] })),
     [scriptMatches],
   );
 
@@ -253,17 +246,18 @@ export default function Analytics() {
   }, [filteredFormations]);
 
   const byMonth = useMemo(() => {
-    const m: Record<string, number> = {};
+    const acc: Record<string, number> = {};
     const fmt = (d: Date) =>
       d.toLocaleDateString("fr-FR", { month: "short", year: "numeric" });
-    const ref = dateFrom || new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+    const ref =
+      dateFrom || new Date(new Date().setFullYear(new Date().getFullYear() - 1));
     filteredProspects.forEach((p) => {
       const d = p.createdAt ? new Date(p.createdAt) : new Date();
       if (d < ref) return;
       const label = fmt(new Date(d.getFullYear(), d.getMonth(), 1));
-      m[label] = (m[label] || 0) + 1;
+      acc[label] = (acc[label] || 0) + 1;
     });
-    return Object.entries(m)
+    return Object.entries(acc)
       .map(([name, value]) => ({ name, value }))
       .sort(
         (a, b) =>
@@ -506,7 +500,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify_between">
             <div className="font-medium">Top secteurs par score moyen</div>
             <div className="text-xs text-slate-600">Total: {kProspects}</div>
           </div>
@@ -523,7 +517,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify_between">
             <div className="font-medium">Prospects par région</div>
             <div className="text-xs text-slate-600">Total: {kProspects}</div>
           </div>
@@ -540,7 +534,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify_between">
             <div className="font-medium">Use cases scripts recommandés</div>
             <div className="text-xs text-slate-600">
               Prospects couverts: {prospectsWithScripts}
@@ -663,4 +657,41 @@ export default function Analytics() {
                 <th className="p-2 text-left">Entreprise</th>
                 <th className="p-2 text-left">Secteur</th>
                 <th className="p-2 text-left">Région</th>
-                <th className="p-2 text-left">Taille</thead>
+                <th className="p-2 text-left">Taille</th>
+                <th className="p-2 text-left">Score</th>
+                <th className="p-2 text-left">Créé le</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lastProspects.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-4 text-center text-slate-600">
+                    Aucune donnée
+                  </td>
+                </tr>
+              )}
+              {lastProspects.map((p, idx) => (
+                <tr key={idx} className="border-b">
+                  <td className="p-2">{p.company_name}</td>
+                  <td className="p-2">
+                    <span className="inline-flex rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 text-[11px]">
+                      {p.sector || "—"}
+                    </span>
+                  </td>
+                  <td className="p-2">{p.region || "—"}</td>
+                  <td className="p-2">{p.size_band || "—"}</td>
+                  <td className="p-2">{p.priority_score ?? "—"}</td>
+                  <td className="p-2">
+                    {p.createdAt
+                      ? new Date(p.createdAt).toLocaleDateString("fr-FR")
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
