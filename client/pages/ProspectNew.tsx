@@ -116,14 +116,6 @@ export default function ProspectNew() {
     }
   };
 
-  const openEmail = () => {
-    const c0 = contacts[0] || { contact_name: "", email: "" };
-    const subject = `Proposition de formation FPSG – ${company_name}`;
-    const body = `Bonjour ${c0.contact_name},%0D%0AJe me permets de vous contacter au nom de FPSG (groupe Fiducial), centre de formation spécialisé en ${sector}. Nous accompagnons vos équipes sur des modules ${preferred_format || "au format adapté"} tels que ${training_history || "nos parcours adaptés"}.%0D%0ASeriez-vous disponible pour un échange rapide cette semaine ?%0D%0A%0D%0ACordialement,%0D{{your_name}} – FPSG`;
-    const url = `mailto:${encodeURIComponent(c0.email)}?subject=${encodeURIComponent(subject)}&body=${body}`;
-    window.location.href = url;
-  };
-
   const save = async () => {
     if (!requiredOk) {
       toast({ title: "Renseignez au moins le nom de l’entreprise" });
@@ -488,12 +480,6 @@ export default function ProspectNew() {
           >
             Copier résumé prospect
           </button>
-          <button
-            onClick={openEmail}
-            className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm"
-          >
-            Générer e-mail prise de contact
-          </button>
         </div>
       </section>
 
@@ -529,12 +515,6 @@ export default function ProspectNew() {
               className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
             >
               Enregistrer le prospect
-            </button>
-            <button
-              onClick={openEmail}
-              className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              Générer un e-mail de prise de contact
             </button>
           </div>
         </div>
