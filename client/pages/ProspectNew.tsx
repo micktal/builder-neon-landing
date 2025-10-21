@@ -149,15 +149,21 @@ export default function ProspectNew() {
         json = null;
       }
       if (!resp.ok || json?.error) {
-        const message =
-          json?.error ||
-          (text && text.startsWith("<")
+        const baseMessage = json?.error
+          ? String(json.error)
+          : text && text.startsWith("<")
             ? "Réponse invalide de l’API Builder"
-            : text || "Erreur serveur");
-        throw new Error(message);
+            : text || "Erreur serveur";
+        const detail = json?.detail
+          ? typeof json.detail === "string"
+            ? json.detail
+            : JSON.stringify(json.detail)
+          : "";
+        throw new Error(detail ? `${baseMessage} — ${detail}` : baseMessage);
       }
+      const data = json ?? (await resp.json().catch(() => null));
       toast({ title: "Prospect ajouté avec succès" });
-      navigate("/prospects");
+      navigate("/prospects", { state: data });
     } catch (e: any) {
       const rawMessage = e?.message || "Impossible d'enregistrer";
       const description = rawMessage.includes("Unexpected token")
