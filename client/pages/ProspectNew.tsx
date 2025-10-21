@@ -84,14 +84,8 @@ export default function ProspectNew() {
   }, [q, sector, region, notes]);
 
   const requiredOk = useMemo(() => {
-    const c0 = contacts[0] ?? ({ contact_name: "", email: "" } as any);
-    return (
-      company_name.trim().length > 0 &&
-      sector.trim().length > 0 &&
-      c0.contact_name.trim().length > 0 &&
-      c0.email.trim().length > 0
-    );
-  }, [company_name, sector, contacts]);
+    return company_name.trim().length > 0;
+  }, [company_name]);
 
   const scoreLabel = useMemo(() => {
     if (priority_score <= 30)
@@ -132,7 +126,7 @@ export default function ProspectNew() {
 
   const save = async () => {
     if (!requiredOk) {
-      toast({ title: "Champs requis manquants" });
+      toast({ title: "Renseignez au moins le nom de l’entreprise" });
       return;
     }
     try {
