@@ -129,21 +129,30 @@ export default function ProspectNew() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const text = await resp.text();
-      const json = (() => {
-        try {
-          return text ? JSON.parse(text) : null;
-        } catch {
-          return null;
+      let text = "";
+      let json: any = null;
+      try {
+        const clone = resp.clone();
+        text = await clone.text();
+        if (text) {
+          try {
+            json = JSON.parse(text);
+          } catch {
+            json = null;
+          }
         }
-      })();
-      if (!resp.ok || json?.error)
-        throw new Error(
+      } catch {
+        text = "";
+        json = null;
+      }
+      if (!resp.ok || json?.error) {
+        const message =
           json?.error ||
-            (text && text.startsWith("<")
-              ? "Réponse invalide de l’API Builder"
-              : "Erreur serveur"),
-        );
+          (text && text.startsWith("<")
+            ? "Réponse invalide de l’API Builder"
+            : text || "Erreur serveur");
+        throw new Error(message);
+      }
       toast({ title: "Prospect ajouté avec succès" });
       // navigate vers la liste
       // navigate("/prospects");
