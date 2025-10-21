@@ -361,6 +361,62 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* Contextual scripts & onboarding */}
+      <section className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <ContextualScriptList
+            items={contextualScripts}
+            onCopy={copy}
+            onPersonalize={handlePersonalize}
+          />
+        </div>
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <BookOpen className="h-4 w-4" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Parcours e-learning interne
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-600">
+                      Validez les modules clés pour la prospection FPSG (plateforme,
+                      scripts, objections).
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {trainingStats.done}/{trainingStats.total}
+                  </Badge>
+                </div>
+                <div className="mt-3 space-y-2">
+                  <Progress value={trainingStats.pct} />
+                  <div className="text-xs text-slate-500">
+                    {trainingStats.pct}% complété · {trainingStats.done} module{trainingStats.done > 1 ? "s" : ""} validé{trainingStats.done > 1 ? "s" : ""}
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Link
+                    to="/espace-formation-interne"
+                    className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    Ouvrir l’e-learning
+                  </Link>
+                  <Link
+                    to="/analytics"
+                    className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    Voir les analytics
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Activity feed and Featured templates */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
