@@ -32,6 +32,9 @@ import ContextualScriptList, {
 import { computeScriptRecommendations } from "@/lib/recommendations";
 import { Progress } from "@/components/ui/progress";
 
+const TRAINING_STORAGE_KEY = "fpsg_internal_training_progress";
+const TRAINING_MODULE_COUNT = 5;
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
