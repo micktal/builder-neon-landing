@@ -58,6 +58,9 @@ interface Prospect {
   priority_score: number;
   preferred_format?: string;
   notes?: string;
+  stage?: string;
+  createdAt?: string;
+  _source?: string;
 }
 
 const EMPTY: Prospect[] = [];
