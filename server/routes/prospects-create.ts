@@ -69,7 +69,9 @@ export const createProspect: RequestHandler = async (req, res) => {
     return res.status(resp.status || 500).json({ error: message, detail: parsed || raw });
   }
 
-  return res.json({ ok: true, id: parsed?.id ?? parsed?._id ?? null });
+  return res
+    .status(201)
+    .json({ ok: true, id: parsed?.id ?? parsed?._id ?? null, data: normalized });
   } catch (e: any) {
     return res.status(500).json({ error: e?.message || "Unknown error" });
   }
