@@ -393,8 +393,6 @@ export default function Prospects() {
     setFSector("");
     setFRegion("");
     setFSize("");
-    setScoreMin(0);
-    setScoreMax(100);
     setPage(1);
   };
 
