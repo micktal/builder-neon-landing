@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -9,6 +9,7 @@ import {
   HelpCircle,
   Mail,
   MessageSquare,
+  BookOpen,
 } from "lucide-react";
 import {
   Dialog,
@@ -24,6 +25,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
+import ContextualScriptList, {
+  type ContextualScriptItem,
+} from "@/components/dashboard/ContextualScriptList";
+import { computeScriptRecommendations } from "@/lib/recommendations";
+import { Progress } from "@/components/ui/progress";
 
 export default function Dashboard() {
   const navigate = useNavigate();
