@@ -110,6 +110,24 @@ export default function ProspectDetail() {
     });
   }, [prospect, formations, templates, primaryContact]);
 
+  const handleCopy = async (label: string, text: string) => {
+    if (!text) {
+      toast({ title: `${label} vide` });
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title: `${label} copié` });
+    } catch (error) {
+      toast({ title: "Échec de la copie" });
+    }
+  };
+
+  const handlePersonalize = (recommendation: ScriptRecommendation) => {
+    setSelectedRecommendation(recommendation);
+    setOpenCompose(true);
+  };
+
   return (
     <div className="container max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
