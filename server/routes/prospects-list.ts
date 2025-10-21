@@ -75,9 +75,16 @@ export const listProspects: RequestHandler = async (req, res) => {
     const localItems = await loadLocalProspects();
     const merged = [...remoteItems, ...localItems];
 
+    const sorted = merged.sort((a, b) => {
+      const dateA = Date.parse(a?.data?.createdAt || "") || 0;
+      const dateB = Date.parse(b?.data?.createdAt || "") || 0;
+      return dateB - dateA;
+    });
+    const limited = sorted.slice(0, limit);
+
     return res.json({
-      items: merged,
-      total: merged.length,
+      items: limited,
+      total: sorted.length,
       warnings: warnings.length ? warnings : undefined,
     });
   } catch (e: any) {
