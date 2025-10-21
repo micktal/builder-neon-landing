@@ -150,6 +150,39 @@ export default function Dashboard() {
     }
   };
 
+  const contextualScripts = useMemo<ContextualScriptItem[]>(() => {
+    if (!prospects.length || !templates.length) return [];
+    const sorted = [...prospects].sort(
+      (a, b) => (b.priority_score || 0) - (a.priority_score || 0),
+    );
+    const entries: ContextualScriptItem[] = [];
+    for (const prospect of sorted) {
+      const contact = Array.isArray(prospect.contacts)
+        ? prospect.contacts[0] || undefined
+        : undefined;
+      const recs = computeScriptRecommendations({
+        prospect,
+        formations,
+        templates,
+        contact,
+      });
+      if (recs.length) {
+        entries.push({ prospect, recommendation: recs[0] });
+      }
+      if (entries.length >= 5) break;
+    }
+    return entries;
+  }, [prospects, formations, templates]);
+
+  const templateHighlights = useMemo(() => contextualScripts.slice(0, 3), [
+    contextualScripts,
+  ]);
+
+  const handlePersonalize = (item: ContextualScriptItem) => {
+    setSelectedScript(item);
+    setComposeOpen(true);
+  };
+
   const emailSubject = 'Formation "{{formation_title}}" — prise de contact';
   const emailBody = `Bonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation \"{{formation_title}}\" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}`;
   const speechText = `Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurité, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?`;
