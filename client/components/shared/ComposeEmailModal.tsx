@@ -74,8 +74,13 @@ export default function ComposeEmailModal({ open, onClose, context, defaultUseCa
 
   useEffect(() => {
     if (!open || !preset || hasAppliedPreset) return;
+    const templateExists =
+      !preset.templateName ||
+      templates.some((t) => t.template_name === preset.templateName);
     const matchesTemplate =
-      !preset.templateName || selectedTemplate?.template_name === preset.templateName;
+      !preset.templateName ||
+      selectedTemplate?.template_name === preset.templateName ||
+      (!pendingTemplateName && !templateExists);
     if (!matchesTemplate) return;
     if (preset.subject) setSubject(preset.subject);
     if (preset.body) setBody(preset.body);
@@ -87,6 +92,8 @@ export default function ComposeEmailModal({ open, onClose, context, defaultUseCa
     preset?.templateName,
     hasAppliedPreset,
     selectedTemplate?.template_name,
+    templates,
+    pendingTemplateName,
   ]);
 
   const filteredProspects = useMemo(() => {
