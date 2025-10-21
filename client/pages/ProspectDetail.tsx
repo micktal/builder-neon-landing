@@ -10,6 +10,12 @@ import {
 import { ArrowLeft, Mail } from "lucide-react";
 import { fetchBuilderItem } from "@/services/builder";
 import GeneratePDFModal from "@/components/shared/GeneratePDFModal";
+import ComposeEmailModal from "@/components/shared/ComposeEmailModal";
+import RecommendedScripts from "@/components/prospects/RecommendedScripts";
+import {
+  computeScriptRecommendations,
+  type ScriptRecommendation,
+} from "@/lib/recommendations";
 
 interface Contact {
   name?: string;
