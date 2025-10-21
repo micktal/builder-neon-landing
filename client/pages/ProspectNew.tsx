@@ -123,6 +123,9 @@ export default function ProspectNew() {
         budget_hint,
         preferred_format,
         notes,
+        priority_score: 50,
+        stage: "Nouveau",
+        createdAt: new Date().toISOString(),
       };
       const resp = await fetch("/api/prospects", {
         method: "POST",
