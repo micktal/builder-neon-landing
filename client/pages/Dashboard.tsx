@@ -52,6 +52,37 @@ export default function Dashboard() {
     pct: 0,
   });
 
+  const refreshTrainingProgress = () => {
+    try {
+      const raw =
+        typeof window === "undefined"
+          ? null
+          : window.localStorage.getItem(TRAINING_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      const done = Array.isArray(parsed)
+        ? parsed.filter((item) => item?.completed).length
+        : Object.values(parsed || {}).filter((value: any) => value?.completed)
+            .length;
+      const total = TRAINING_MODULE_COUNT;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      setTrainingStats({ done, total, pct });
+    } catch {
+      setTrainingStats({ done: 0, total: TRAINING_MODULE_COUNT, pct: 0 });
+    }
+  };
+
+  useEffect(() => {
+    refreshTrainingProgress();
+    if (typeof window === "undefined") return;
+    const handler = (event: StorageEvent) => {
+      if (!event.key || event.key === TRAINING_STORAGE_KEY) {
+        refreshTrainingProgress();
+      }
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
   // Counters from Builder CMS
   const [counts, setCounts] = useState<{
     prospects?: number;
