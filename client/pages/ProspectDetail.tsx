@@ -76,11 +76,15 @@ export default function ProspectDetail() {
     (async () => {
       const p = await fetchBuilderItem<Prospect>("prospects", id);
       setProspect(p);
-      const tRes = await fetch("/api/templates?limit=200")
-        .then((r) => r.json())
-        .catch(() => ({ items: [] }));
+      const [tRes, fRes] = await Promise.all([
+        fetch("/api/templates?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
+        fetch("/api/formations?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
+      ]);
       setTemplates(
         Array.isArray(tRes?.items) ? tRes.items.map((x: any) => x.data) : [],
+      );
+      setFormations(
+        Array.isArray(fRes?.items) ? fRes.items.map((x: any) => x.data) : [],
       );
     })();
   }, [id]);
