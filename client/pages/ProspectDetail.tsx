@@ -98,6 +98,17 @@ export default function ProspectDetail() {
   }
 
   const contacts = Array.isArray(prospect.contacts) ? prospect.contacts : [];
+  const primaryContact = contacts[0] || null;
+
+  const recommendations = useMemo(() => {
+    if (!prospect) return [] as ScriptRecommendation[];
+    return computeScriptRecommendations({
+      prospect,
+      formations,
+      templates,
+      contact: primaryContact,
+    });
+  }, [prospect, formations, templates, primaryContact]);
 
   return (
     <div className="container max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
