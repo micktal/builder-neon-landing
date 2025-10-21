@@ -34,6 +34,33 @@ import { Progress } from "@/components/ui/progress";
 
 const TRAINING_STORAGE_KEY = "fpsg_internal_training_progress";
 const TRAINING_MODULE_COUNT = 5;
+const FALLBACK_TEMPLATE_CARDS = [
+  {
+    title: "Prise de contact retail",
+    useCase: "Prospection à froid",
+    email:
+      'Subject: Formation "{{formation_title}}" — prise de contact\n\nBonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation "{{formation_title}}" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}',
+    speech:
+      "Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurité, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?",
+  },
+  {
+    title: "Relance rendez-vous",
+    useCase: "Relance",
+    email:
+      "Subject: Relance — {{formation_title}}\n\nBonjour {{contact_name}},\nSuite à mon précédent message, je me permets une relance rapide...\n\nCordialement,\n{{your_name}}",
+    speech:
+      "Bonjour {{contact_name}}, je me permets une relance rapide concernant notre échange...",
+  },
+  {
+    title: "Suite à incident",
+    useCase: "Réactivité",
+    email:
+      "Subject: Suite à l'incident — accompagnement FPSG\n\nBonjour {{contact_name}}, nous pouvons former vos équipes sur {{formation_title}}...",
+    speech:
+      "Bonjour {{contact_name}}, suite à l'incident récent, nous proposons un module dédié...",
+  },
+] as const;
+
 type ProspectRecord = ContextualScriptItem["prospect"];
 
 export default function Dashboard() {
