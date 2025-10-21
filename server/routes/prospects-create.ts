@@ -36,9 +36,6 @@ async function saveProspectLocally(data: any) {
 export const createProspect: RequestHandler = async (req, res) => {
   try {
     const BUILDER_PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
-    if (!BUILDER_PRIVATE_KEY) {
-      return res.status(500).json({ error: "Missing BUILDER_PRIVATE_KEY" });
-    }
     const body = req.body ?? {};
     // Validate required
     if (typeof body.company_name === "string") {
