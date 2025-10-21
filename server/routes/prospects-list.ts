@@ -27,19 +27,22 @@ async function loadLocalProspects() {
 
 export const listProspects: RequestHandler = async (req, res) => {
   try {
-    const PRIVATE_KEY = process.env.BUILDER_PRIVATE_KEY;
+    const PUBLIC_KEY =
+      process.env.VITE_BUILDER_PUBLIC_KEY || process.env.BUILDER_PUBLIC_KEY || "";
     const limit = Math.min(parseInt(String(req.query.limit || 200), 10) || 200, 500);
     const warnings: string[] = [];
 
     let remoteItems: any[] = [];
-    if (PRIVATE_KEY) {
+    if (PUBLIC_KEY) {
       try {
-        const url = new URL(`https://builder.io/api/v3/content/prospects`);
+        const url = new URL(`https://cdn.builder.io/api/v3/content/prospects`);
+        url.searchParams.set("apiKey", PUBLIC_KEY);
         url.searchParams.set("limit", String(limit));
         url.searchParams.set("fields", "data,id");
+        url.searchParams.set("cachebust", Date.now().toString());
 
         const resp = await fetch(url.toString(), {
-          headers: { Authorization: `Bearer ${PRIVATE_KEY}`, Accept: "application/json" },
+          headers: { Accept: "application/json" },
         });
         const txt = await resp.text();
         if (!resp.ok) {
@@ -69,11 +72,15 @@ export const listProspects: RequestHandler = async (req, res) => {
         warnings.push(err?.message || "Erreur Builder CMS");
       }
     } else {
-      warnings.push("BUILDER_PRIVATE_KEY manquante : utilisation du stockage local");
+      warnings.push("Clé publique Builder manquante : utilisation du stockage local");
     }
 
     const localItems = await loadLocalProspects();
     const merged = [...remoteItems, ...localItems];
+
+    if (!merged.length) {
+      warnings.push("Aucun prospect publié trouvé");
+    }
 
     const sorted = merged.sort((a, b) => {
       const dateA = Date.parse(a?.data?.createdAt || "") || 0;
