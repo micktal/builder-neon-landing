@@ -216,11 +216,9 @@ export default function Prospects() {
       const matchSector = !fSector || p.sector === fSector;
       const matchRegion = !fRegion || p.region === fRegion;
       const matchSize = !fSize || (p.size_band || "") === fSize;
-      const matchScore =
-        p.priority_score >= scoreMin && p.priority_score <= scoreMax;
-      return matchText && matchSector && matchRegion && matchSize && matchScore;
+      return matchText && matchSector && matchRegion && matchSize;
     });
-  }, [q, fSector, fRegion, fSize, scoreMin, scoreMax]);
+  }, [q, fSector, fRegion, fSize]);
 
   const total = filtered.length;
   const pageCount = Math.max(1, Math.ceil(total / perPage));
