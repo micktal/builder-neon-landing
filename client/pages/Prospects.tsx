@@ -133,7 +133,7 @@ export default function Prospects() {
         }) as Prospect[],
       );
     })();
-  }, []);
+  }, [toast]);
 
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
