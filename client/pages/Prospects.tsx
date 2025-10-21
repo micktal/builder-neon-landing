@@ -633,31 +633,6 @@ export default function Prospects() {
               </option>
             ))}
           </select>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 whitespace-nowrap">
-              Score: {scoreMin}–{scoreMax}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={scoreMin}
-              onChange={(e) => {
-                setScoreMin(Number(e.target.value));
-                setPage(1);
-              }}
-            />
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={scoreMax}
-              onChange={(e) => {
-                setScoreMax(Number(e.target.value));
-                setPage(1);
-              }}
-            />
-          </div>
         </div>
         <div className="mt-3">
           <button
