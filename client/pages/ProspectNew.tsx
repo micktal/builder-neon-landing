@@ -87,23 +87,9 @@ export default function ProspectNew() {
     return company_name.trim().length > 0;
   }, [company_name]);
 
-  const scoreLabel = useMemo(() => {
-    if (priority_score <= 30)
-      return { label: "Froid", color: "bg-blue-100 text-blue-700" } as const;
-    if (priority_score <= 70)
-      return { label: "Tiède", color: "bg-amber-100 text-amber-700" } as const;
-    return { label: "Chaud", color: "bg-red-100 text-red-700" } as const;
-  }, [priority_score]);
-
-  const autoScore = () => {
-    let s = 40;
-    if (size_band === "1000+") s += 25;
-    else if (size_band === "250–999") s += 15;
-    else if (size_band === "50–249") s += 8;
-    if (["Santé", "Retail", "Industrie"].includes(sector)) s += 10;
-    if (preferred_format) s += 5;
-    setPriorityScore(Math.max(0, Math.min(100, s)));
-  };
+  useEffect(() => {
+    setPriorityScore(0);
+  }, []);
 
   const copySummary = async () => {
     const c0 = contacts[0] || { contact_name: "", role: "", email: "" };
@@ -442,47 +428,6 @@ export default function ProspectNew() {
         </aside>
       </section>
 
-      {/* Bloc 4 */}
-      <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
-        <h2 className="text-[18px] sm:text-[22px] font-semibold text-slate-900 mb-1">
-          Priorité commerciale
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-          <div className="sm:col-span-2">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={priority_score}
-              onChange={(e) => setPriorityScore(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="mt-1 text-sm text-slate-700">
-              Score: {priority_score}/100
-            </div>
-          </div>
-          <div
-            className={`inline-flex h-9 items-center justify-center rounded-full px-3 text-sm ${scoreLabel.color}`}
-          >
-            {scoreLabel.label}
-          </div>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button
-            onClick={autoScore}
-            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-          >
-            Calculer score automatique
-          </button>
-          <button
-            onClick={copySummary}
-            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-          >
-            Copier résumé prospect
-          </button>
-        </div>
-      </section>
-
       {/* Aperçu */}
       <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
         <div className="text-sm font-semibold text-slate-900 mb-2">
@@ -511,8 +456,7 @@ export default function ProspectNew() {
           <div className="flex gap-2">
             <button
               onClick={save}
-              disabled={!requiredOk}
-              className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium"
             >
               Enregistrer le prospect
             </button>
