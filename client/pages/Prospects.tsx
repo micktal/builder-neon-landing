@@ -88,6 +88,66 @@ const REGIONS = [
 ] as const;
 const SIZES = ["1–49", "50–249", "250–999", "1000+"] as const;
 
+type ProspectLike = Partial<Prospect> & { id?: string };
+
+const normalizeProspect = (prospect: ProspectLike): Prospect => {
+  const contacts = Array.isArray(prospect.contacts)
+    ? (prospect.contacts as Contact[])
+    : [];
+  const priorityRaw =
+    typeof prospect.priority_score === "number"
+      ? prospect.priority_score
+      : Number(prospect.priority_score ?? 0);
+  const createdAt =
+    prospect.createdAt && !Number.isNaN(Date.parse(prospect.createdAt))
+      ? prospect.createdAt
+      : new Date().toISOString();
+
+  return {
+    ...prospect,
+    id: prospect.id,
+    company_name: prospect.company_name ?? "",
+    sector: prospect.sector ?? "",
+    region: prospect.region ?? "",
+    contacts,
+    priority_score: Number.isFinite(priorityRaw)
+      ? Math.min(100, Math.max(0, priorityRaw))
+      : 0,
+    createdAt,
+  } as Prospect;
+};
+
+const makeProspectKey = (prospect: ProspectLike) => {
+  if (prospect.id) return `id:${prospect.id}`;
+  const name = (prospect.company_name ?? "").toLowerCase();
+  const region = (prospect.region ?? "").toLowerCase();
+  return `name:${name}|${region}`;
+};
+
+const mergeProspectLists = (
+  existing: Prospect[],
+  incoming: ProspectLike[],
+): Prospect[] => {
+  const map = new Map<string, Prospect>();
+  incoming.forEach((item) => {
+    if (!item) return;
+    const normalized = normalizeProspect(item);
+    map.set(makeProspectKey(normalized), normalized);
+  });
+  existing.forEach((item) => {
+    if (!item) return;
+    const key = makeProspectKey(item);
+    if (!map.has(key)) {
+      map.set(key, normalizeProspect(item));
+    }
+  });
+  return Array.from(map.values()).sort(
+    (a, b) =>
+      (Date.parse(b.createdAt || "") || 0) -
+      (Date.parse(a.createdAt || "") || 0),
+  );
+};
+
 export default function Prospects() {
   const { toast } = useToast();
 
