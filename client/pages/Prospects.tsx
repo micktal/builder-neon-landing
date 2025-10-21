@@ -116,9 +116,21 @@ export default function Prospects() {
     (async () => {
       const resp = await fetch("/api/prospects");
       const json = await resp.json();
+      if (Array.isArray(json?.warnings) && json.warnings.length) {
+        toast({
+          title: "Avertissement",
+          description: json.warnings.join(" \u2022 "),
+        });
+      }
       const items = Array.isArray(json?.items) ? json.items : [];
       setData(
-        items.map((i: any) => ({ id: i.id, ...(i.data || {}) })) as Prospect[],
+        items.map((i: any) => {
+          const payload = { id: i.id, ...(i.data || {}) } as Prospect;
+          if (typeof payload.priority_score !== "number") {
+            payload.priority_score = 50;
+          }
+          return payload;
+        }) as Prospect[],
       );
     })();
   }, []);
