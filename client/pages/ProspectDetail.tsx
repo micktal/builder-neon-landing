@@ -172,6 +172,11 @@ export default function ProspectDetail() {
 
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <main className="lg:col-span-2 space-y-4">
+          <RecommendedScripts
+            recommendations={recommendations}
+            onCopy={handleCopy}
+            onPersonalize={handlePersonalize}
+          />
           <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-slate-900 mb-2">
               Contacts
