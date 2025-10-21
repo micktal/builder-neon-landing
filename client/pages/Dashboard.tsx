@@ -42,7 +42,7 @@ const FALLBACK_TEMPLATE_CARDS = [
     email:
       'Subject: Formation "{{formation_title}}" — prise de contact\n\nBonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation "{{formation_title}}" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}',
     speech:
-      "Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurit��, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?",
+      "Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurité, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?",
   },
   {
     title: "Relance rendez-vous",
@@ -111,7 +111,6 @@ export default function Dashboard() {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
-  // Counters from Builder CMS
   const [counts, setCounts] = useState<{
     prospects?: number;
     formations?: number;
@@ -144,9 +143,15 @@ export default function Dashboard() {
     (async () => {
       try {
         const [pRes, fRes, tRes] = await Promise.all([
-          fetch("/api/prospects?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
-          fetch("/api/formations?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
-          fetch("/api/templates?limit=200").then((r) => r.json()).catch(() => ({ items: [] })),
+          fetch("/api/prospects?limit=200")
+            .then((r) => r.json())
+            .catch(() => ({ items: [] })),
+          fetch("/api/formations?limit=200")
+            .then((r) => r.json())
+            .catch(() => ({ items: [] })),
+          fetch("/api/templates?limit=200")
+            .then((r) => r.json())
+            .catch(() => ({ items: [] })),
         ]);
         const mappedProspects: ProspectRecord[] = Array.isArray(pRes?.items)
           ? pRes.items.map((item: any) => ({ id: item.id, ...(item.data || {}) }))
@@ -224,8 +229,27 @@ export default function Dashboard() {
     setComposeOpen(true);
   };
 
-  const __legacyEmailBody = `Bonjour {{contact_name}},\n\nJe me permets de vous contacter au sujet de la formation \"{{formation_title}}\" pour vos équipes {{audience}} (secteur {{sector}}).\nNous accompagnons de nombreuses organisations sur les sujets de sûreté, sécurité et prévention.\n\nSouhaitez-vous que nous échangions 15 minutes cette semaine ?\n\nCordialement,\n{{your_name}}\nFPSG (Fiducial)\n{{your_email}}`;
-  const __legacySpeechText = `Bonjour {{contact_name}}, je suis {{your_name}} de FPSG. Nous accompagnons {{sector}} sur des formations en sûreté, sécurité, gestion de conflit et prévention.\nSelon vos enjeux, nous pouvons proposer du présentiel, distanciel ou blended. Est-ce pertinent que je vous présente \"{{formation_title}}\" pour {{audience}} ?`;
+  const composeContext = selectedScript
+    ? {
+        prospect: selectedScript.prospect,
+        formation: selectedScript.recommendation.formation
+          ? {
+              title: selectedScript.recommendation.formation.title,
+              duration: selectedScript.recommendation.formation.duration,
+              format: selectedScript.recommendation.formation.format,
+              domain: selectedScript.recommendation.formation.domain,
+            }
+          : undefined,
+      }
+    : undefined;
+
+  const composePreset = selectedScript
+    ? {
+        templateName: selectedScript.recommendation.template.template_name,
+        subject: selectedScript.recommendation.subjectPreview,
+        body: selectedScript.recommendation.emailBodyPreview,
+      }
+    : undefined;
 
   return (
     <div className="container max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
@@ -395,7 +419,9 @@ export default function Dashboard() {
                 <div className="mt-3 space-y-2">
                   <Progress value={trainingStats.pct} />
                   <div className="text-xs text-slate-500">
-                    {trainingStats.pct}% complété · {trainingStats.done} module{trainingStats.done > 1 ? "s" : ""} validé{trainingStats.done > 1 ? "s" : ""}
+                    {trainingStats.pct}% complété · {trainingStats.done} module
+                    {trainingStats.done > 1 ? "s" : ""} validé
+                    {trainingStats.done > 1 ? "s" : ""}
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -415,6 +441,42 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-dashed border-gray-200 bg-white/60 p-4 sm:p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-900">
+              Modules à prioriser
+            </h3>
+            <p className="mt-1 text-xs text-slate-600">
+              Guide de révision rapide avant vos rendez-vous.
+            </p>
+            <ul className="mt-3 space-y-2 text-xs text-slate-700">
+              <li>
+                <Link
+                  to="/espace-formation-interne#prise_contact"
+                  className="underline-offset-4 hover:underline"
+                >
+                  Réussir la prise de contact
+                </Link>
+                <span className="ml-1 text-slate-400">(scripts + objections)</span>
+              </li>
+              <li>
+                <Link
+                  to="/espace-formation-interne#templates"
+                  className="underline-offset-4 hover:underline"
+                >
+                  Templates d’e-mails et scripts
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/espace-formation-interne#plateforme"
+                  className="underline-offset-4 hover:underline"
+                >
+                  Découverte de la plateforme
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -426,11 +488,7 @@ export default function Dashboard() {
           </h2>
           <div className="rounded-2xl border border-gray-200 bg-white shadow-sm divide-y">
             {[
-              {
-                t: "Prospect créé : ACME Santé",
-                s: "06/10 10:24",
-                tag: "Prospect",
-              },
+              { t: "Prospect créé : ACME Santé", s: "06/10 10:24", tag: "Prospect" },
               {
                 t: "Template mis à jour : Relance RDV",
                 s: "05/10 15:02",
@@ -473,6 +531,17 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      <ComposeEmailModal
+        open={composeOpen}
+        onClose={() => {
+          setComposeOpen(false);
+          setSelectedScript(null);
+        }}
+        context={composeContext}
+        defaultUseCase={selectedScript?.recommendation.template.use_case}
+        preset={composePreset}
+      />
     </div>
   );
 }
