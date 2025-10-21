@@ -194,15 +194,11 @@ export default function Prospects() {
         });
       }
       const items = Array.isArray(json?.items) ? json.items : [];
-      setData(
-        items.map((i: any) => {
-          const payload = { id: i.id, ...(i.data || {}) } as Prospect;
-          if (typeof payload.priority_score !== "number") {
-            payload.priority_score = 50;
-          }
-          return payload;
-        }) as Prospect[],
-      );
+      const incoming = items.map((i: any) => ({
+        id: i.id,
+        ...(i.data || {}),
+      })) as ProspectLike[];
+      setData((prev) => mergeProspectLists(prev, incoming));
     })();
   }, [toast]);
 
