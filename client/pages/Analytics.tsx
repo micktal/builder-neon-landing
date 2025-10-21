@@ -500,7 +500,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify_between">
+          <div className="flex items-center justify-between">
             <div className="font-medium">Top secteurs par score moyen</div>
             <div className="text-xs text-slate-600">Total: {kProspects}</div>
           </div>
@@ -517,7 +517,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify_between">
+          <div className="flex items-center justify-between">
             <div className="font-medium">Prospects par région</div>
             <div className="text-xs text-slate-600">Total: {kProspects}</div>
           </div>
@@ -534,7 +534,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify_between">
+          <div className="flex items-center justify-between">
             <div className="font-medium">Use cases scripts recommandés</div>
             <div className="text-xs text-slate-600">
               Prospects couverts: {prospectsWithScripts}
