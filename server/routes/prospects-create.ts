@@ -122,6 +122,22 @@ export const createProspect: RequestHandler = async (req, res) => {
     .status(201)
     .json({ ok: true, id: parsed?.id ?? parsed?._id ?? null, data: normalized });
   } catch (e: any) {
+    if (normalized) {
+      try {
+        const fallback = await saveProspectLocally(normalized);
+        return res.status(201).json({
+          ok: true,
+          id: fallback.id,
+          data: normalized,
+          source: fallback.source,
+          warning: e?.message || "Enregistré hors ligne",
+        });
+      } catch (err: any) {
+        return res
+          .status(500)
+          .json({ error: e?.message || err?.message || "Unknown error" });
+      }
+    }
     return res.status(500).json({ error: e?.message || "Unknown error" });
   }
 };
