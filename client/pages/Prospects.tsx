@@ -651,12 +651,19 @@ export default function Prospects() {
                     />
                   </td>
                   <td className="p-3">
-                    <Link
-                      to={`/prospects/${p.id}`}
-                      className="text-blue-700 hover:underline"
-                    >
-                      {p.company_name}
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/prospects/${p.id}`}
+                        className="text-blue-700 hover:underline"
+                      >
+                        {p.company_name}
+                      </Link>
+                      {p._source === "local" && (
+                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+                          Hors ligne
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="p-3">{p.sector}</td>
                   <td className="p-3">{p.region}</td>
