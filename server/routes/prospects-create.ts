@@ -8,6 +8,9 @@ export const createProspect: RequestHandler = async (req, res) => {
     }
     const body = req.body ?? {};
     // Validate required
+    if (typeof body.company_name === "string") {
+      body.company_name = body.company_name.trim();
+    }
     if (!body.company_name) {
       return res.status(400).json({ error: "Missing company name" });
     }
