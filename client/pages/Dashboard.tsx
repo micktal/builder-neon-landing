@@ -34,6 +34,7 @@ import { Progress } from "@/components/ui/progress";
 
 const TRAINING_STORAGE_KEY = "fpsg_internal_training_progress";
 const TRAINING_MODULE_COUNT = 5;
+type ProspectRecord = ContextualScriptItem["prospect"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
