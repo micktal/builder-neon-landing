@@ -753,8 +753,18 @@ export default function Prospects() {
               className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
             >
               <div className="flex items-center justify-between">
-                <div className="font-semibold text-slate-900">
-                  {p.company_name}
+                <div className="flex flex-col gap-1">
+                  <div className="font-semibold text-slate-900 flex items-center gap-2">
+                    {p.company_name}
+                    {p._source === "local" && (
+                      <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+                        Hors ligne
+                      </span>
+                    )}
+                  </div>
+                  {p.stage && (
+                    <div className="text-xs text-slate-500">{p.stage}</div>
+                  )}
                 </div>
                 <span
                   className={`inline-flex rounded-full px-2 py-0.5 text-xs ${scoreBadge(p.priority_score)}`}
